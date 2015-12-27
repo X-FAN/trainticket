@@ -15,6 +15,9 @@ import com.xf.sherlock.utils.RetrofitUtils;
 
 public class MainActivity extends AppCompatActivity {
 
+    static {
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
