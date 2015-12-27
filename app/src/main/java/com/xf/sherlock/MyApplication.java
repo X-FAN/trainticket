@@ -13,7 +13,5 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        //设置Picasso
-        Picasso.setSingletonInstance(new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build());
     }
 }

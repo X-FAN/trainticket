@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
@@ -32,6 +33,10 @@ import com.xf.sherlock.utils.RetrofitUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * A login screen that offers login via email/password.
@@ -64,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     private void getCheckImage() {
         int screenWidth = CommonUtils.getWidth(this);
         int padding = CommonUtils.dp2px(this, 16);
-        int checkImageHeight = (screenWidth - 16) * 190 / 293;
+        int checkImageHeight = (screenWidth - padding) * 190 / 293;
         Picasso.with(this).load(CHECK_IMGAE).resize(screenWidth, checkImageHeight).into(mCheckImage, new Callback() {
             @Override
             public void onSuccess() {
@@ -81,7 +86,53 @@ public class LoginActivity extends AppCompatActivity {
         para.width = screenWidth - gap;
         para.height = 190 * para.width / 293;
         final float gapHeight = para.height * 3f / 19f;
-        mCheckImage.setOnTouchListener(new View.OnTouchListener() {
+        RxView.touches(mCheckImage, new Func1<MotionEvent, Boolean>() {
+            @Override
+            public Boolean call(MotionEvent motionEvent) {
+                return true;
+            }
+        }).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(new Action1<MotionEvent>() {
+            @Override
+            public void call(MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        x = motionEvent.getX();
+                        y = motionEvent.getY() - gapHeight;
+                        if (y < 0) {//超出验证图片大小范围内不做任何响应
+                            break;
+                        } else if (y > para.height - gapHeight - 25) {
+                            break;
+                        }
+                        ImagePoint point = new ImagePoint((int) (x * 293f / para.width), (int) (y * 190f / para.height));
+                        final ImageView iv = new ImageView(LoginActivity.this);
+                        iv.setImageResource(R.drawable.selected);
+                        iv.setTag(point);
+                        iv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                v.setVisibility(View.GONE);
+                                recordPoint.remove(iv.getTag());
+                                recordImage.remove(v);
+                            }
+                        });
+                        recordImage.add(iv);
+                        recordPoint.add(point);
+                        lp = new RelativeLayout.LayoutParams(50, 50);
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                        lp.topMargin = (int) (y + gapHeight - 25);
+                        lp.leftMargin = (int) (x - 25);
+                        iv.setLayoutParams(lp);
+                        mContainer.addView(iv);
+                        break;
+                    default:
+                        break;
+                }
+
+
+            }
+        });
+       /* mCheckImage.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -120,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 return true;
             }
-        });
+        });*/
     }
 
 

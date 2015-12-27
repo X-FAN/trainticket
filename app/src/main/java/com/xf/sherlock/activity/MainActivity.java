@@ -8,7 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 import com.xf.sherlock.R;
+import com.xf.sherlock.utils.RetrofitUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.login://跳转到登录界面
                         Intent intent = new Intent();
-                        intent.setClass(MainActivity.this,LoginActivity.class);
+                        intent.setClass(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
                         break;
                     default:
@@ -37,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //设置Picasso
+        Picasso.setSingletonInstance(new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build());
     }
 
     @Override
