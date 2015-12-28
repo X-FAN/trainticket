@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -136,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         LoginService loginService = RetrofitUtils.getIntance(this).create(LoginService.class);
-//        loginService.login().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        loginService.login("", "", "", "", "").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
 
 
        /* mCheckImage.setOnTouchListener(new View.OnTouchListener() {
