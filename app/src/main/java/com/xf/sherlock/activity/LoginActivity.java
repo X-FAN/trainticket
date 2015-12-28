@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -28,6 +29,7 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.xf.sherlock.R;
 import com.xf.sherlock.bean.ImagePoint;
+import com.xf.sherlock.request.LoginService;
 import com.xf.sherlock.utils.CommonUtils;
 import com.xf.sherlock.utils.RetrofitUtils;
 
@@ -37,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * A login screen that offers login via email/password.
@@ -132,6 +135,10 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+        LoginService loginService = RetrofitUtils.getIntance(this).create(LoginService.class);
+//        loginService.login().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+
+
        /* mCheckImage.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
