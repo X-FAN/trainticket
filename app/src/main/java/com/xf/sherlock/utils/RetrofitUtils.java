@@ -17,20 +17,23 @@ import javax.net.ssl.X509TrustManager;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 
 /**
  * Created by Administrator on 2015/12/5.
  */
 public class RetrofitUtils {
-    private  RetrofitUtils(){
+    private RetrofitUtils() {
 
     }
+
     public static Retrofit retrofit;
 
-    public static Retrofit getIntance(Context context) {
+    public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
-            retrofit = new Retrofit.Builder().baseUrl("https://www.12306.cn/")
+            retrofit = new Retrofit.Builder().baseUrl("https://kyfw.12306.cn/")
                     .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .client(getClient(context))
                     .build();
         }
@@ -40,8 +43,8 @@ public class RetrofitUtils {
 
     public static OkHttpClient getClient(Context context) {
         OkHttpClient client = getUnsafeOkHttpClient();
-        client.interceptors().add(new AddCookiesInterceptor(context));
         client.interceptors().add(new ReceivedCookiesInterceptor(context));
+        client.interceptors().add(new AddCookiesInterceptor(context));
         /*client.networkInterceptors().add(new StethoInterceptor());//一个调试工具，具体搜Stetho
         return new OkClient(client);*/
         return client;

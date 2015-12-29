@@ -5,12 +5,13 @@ import android.content.SharedPreferences;
 
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
+import com.xf.sherlock.utils.L;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class ReceivedCookiesInterceptor implements Interceptor {
     private Context context;
@@ -23,18 +24,28 @@ public class ReceivedCookiesInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
+        L.e("接收cookie");
         Response originalResponse = chain.proceed(chain.request());
         if (!originalResponse.headers("Set-Cookie").isEmpty()) {
-            final HashSet<String> cookies = new HashSet<>();
-            Observable.from(originalResponse.headers("Set-Cookie")).subscribe(new Action1<String>() {
-                @Override
-                public void call(String cookie) {
-                    cookies.add(cookie);
-                }
-            });
+            final StringBuffer cookieBuffer = new StringBuffer();
+            Observable.from(originalResponse.headers("Set-Cookie"))
+                    .map(new Func1<String, String>() {
+                        @Override
+                        public String call(String s) {
+                            String[] cookieArray = s.split(";");
+                            return cookieArray[0];
+                        }
+                    })
+                    .subscribe(new Action1<String>() {
+                        @Override
+                        public void call(String cookie) {
+                            cookieBuffer.append(cookie).append(";");
+                        }
+                    });
             SharedPreferences sharedPreferences = context.getSharedPreferences("cookie", Context.MODE_PRIVATE);
-            sharedPreferences.edit().putStringSet("cookie", cookies);
-            sharedPreferences.edit().apply();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("cookie", cookieBuffer.toString());
+            editor.commit();
         }
 
         return originalResponse;

@@ -36,4 +36,5 @@ dependencies {
     compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7:0.3.0'
     compile 'io.reactivex:rxjava:1.0.10'
     compile 'io.reactivex:rxandroid:0.23.0'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
 }

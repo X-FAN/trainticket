@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //设置Picasso
-        Picasso.setSingletonInstance(new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build());
+        Picasso picasso =new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build();
+        picasso.setIndicatorsEnabled(true);
+        Picasso.setSingletonInstance(picasso);
     }
 
     @Override

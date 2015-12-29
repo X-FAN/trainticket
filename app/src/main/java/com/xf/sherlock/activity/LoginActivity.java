@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -25,18 +24,21 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.xf.sherlock.R;
+import com.xf.sherlock.bean.CheckImage;
 import com.xf.sherlock.bean.ImagePoint;
-import com.xf.sherlock.request.LoginService;
+import com.xf.sherlock.request.CheckImageService;
 import com.xf.sherlock.utils.CommonUtils;
+import com.xf.sherlock.utils.L;
 import com.xf.sherlock.utils.RetrofitUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import rx.Observable;
+import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -60,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView mCheckImage;
     private RelativeLayout.LayoutParams lp;
     private RelativeLayout mContainer;
+    private CheckImageService mCheckImageService;
 
 
     @Override
@@ -68,13 +71,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         initViews();
         getCheckImage();
+        mCheckImageService = RetrofitUtils.getInstance(this).create(CheckImageService.class);
     }
 
     private void getCheckImage() {
         int screenWidth = CommonUtils.getWidth(this);
         int padding = CommonUtils.dp2px(this, 16);
         int checkImageHeight = (screenWidth - padding) * 190 / 293;
-        Picasso.with(this).load(CHECK_IMGAE).resize(screenWidth, checkImageHeight).into(mCheckImage, new Callback() {
+        Picasso.with(this).load(CHECK_IMGAE).skipMemoryCache().resize(screenWidth, checkImageHeight).into(mCheckImage, new Callback() {
             @Override
             public void onSuccess() {
 
@@ -136,50 +140,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-        LoginService loginService = RetrofitUtils.getIntance(this).create(LoginService.class);
-        loginService.login("", "", "", "", "").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
 
 
-       /* mCheckImage.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        x = event.getX();
-                        y = event.getY() - gapHeight;
-                        if (y < 0) {//超出验证图片大小范围内不做任何响应
-                            break;
-                        } else if (y > para.height - gapHeight - 25) {
-                            break;
-                        }
-                        ImagePoint point = new ImagePoint((int) (x * 293f / para.width), (int) (y * 190f / para.height));
-                        final ImageView iv = new ImageView(LoginActivity.this);
-                        iv.setImageResource(R.drawable.selected);
-                        iv.setTag(point);
-                        iv.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                v.setVisibility(View.GONE);
-                                recordPoint.remove(iv.getTag());
-                                recordImage.remove(v);
-                            }
-                        });
-                        recordImage.add(iv);
-                        recordPoint.add(point);
-                        lp = new RelativeLayout.LayoutParams(50, 50);
-                        lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                        lp.topMargin = (int) (y + gapHeight - 25);
-                        lp.leftMargin = (int) (x - 25);
-                        iv.setLayoutParams(lp);
-                        mContainer.addView(iv);
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });*/
     }
 
 
@@ -231,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -252,6 +214,43 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            final StringBuffer randcode = new StringBuffer();
+            Observable.from(recordPoint).subscribe(new Observer<ImagePoint>() {
+                @Override
+                public void onCompleted() {
+                    randcode.deleteCharAt(randcode.length() - 1);
+                    L.e(randcode.toString());
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(ImagePoint imagePoint) {
+                    randcode.append(imagePoint.getX()).append(",").append(imagePoint.getY()).append(",");
+                }
+            });
+            mCheckImageService.checkImage(randcode.toString(), "sjrand").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<CheckImage>() {
+                @Override
+                public void call(CheckImage checkImage) {
+                    if ("1".equals(checkImage.getData().getResult())) {
+                        Toast.makeText(LoginActivity.this, "图片验证正确", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "图片验证失败", Toast.LENGTH_LONG).show();
+                    }
+
+                    showProgress(false);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+                    showProgress(false);
+                }
+            });
 
         }
     }
