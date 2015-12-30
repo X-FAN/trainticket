@@ -1,5 +1,7 @@
 package com.xf.sherlock.request;
 
+import android.support.annotation.NonNull;
+
 import com.xf.sherlock.bean.CheckImage;
 
 import retrofit.http.Field;
@@ -11,8 +13,9 @@ import rx.Observable;
  * Created by TC on 2015/12/29.
  */
 public interface CheckImageService {
+
     @FormUrlEncoded
-    @POST("otn/login/loginAysnSuggest")
-    Observable<CheckImage> checkImage(@Field("randCode") String randCode, @Field("rand") String rand);
+    @POST("otn/passcodeNew/checkRandCodeAnsyn")
+    Observable<CheckImage> checkImage(@Field("randCode") @NonNull String randCode, @Field("rand") @NonNull String rand);
 
 }
