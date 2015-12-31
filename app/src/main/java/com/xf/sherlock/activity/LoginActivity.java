@@ -5,12 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
@@ -25,6 +24,8 @@ import android.widget.Toast;
 import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import com.xf.sherlock.R;
 import com.xf.sherlock.bean.CheckImage;
 import com.xf.sherlock.bean.ImagePoint;
@@ -49,7 +50,7 @@ import rx.schedulers.Schedulers;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends RxAppCompatActivity {
 
     private int mScreenWidth;
     private int mCheckImageHeight;
@@ -70,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView mCheckImage;
     private RelativeLayout mContainer;
     private ViewGroup.LayoutParams mPara;
+    private TextView mRefresh;//刷新
 
 
     @Override
@@ -91,7 +93,9 @@ public class LoginActivity extends AppCompatActivity {
                 return true;
             }
         })
+                .compose(this.<MotionEvent>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
+
                 .subscribe(new Action1<MotionEvent>() {
                     @Override
                     public void call(MotionEvent motionEvent) {
@@ -165,12 +169,32 @@ public class LoginActivity extends AppCompatActivity {
         mPara.height = 190 * mPara.width / 293;
         mGapHeight = mPara.height * 3f / 19f;
         mHeightLimit = mPara.height - mGapHeight - 25;
+        initRefreshPosition();
+    }
+
+    //设置刷新按钮的位置
+    private void initRefreshPosition() {
+
+        float textGap = (mGapHeight - mRefresh.getTextSize()) / 2.0f;
+        int padding = Math.round(textGap);
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mRefresh.getLayoutParams();
+        lp.topMargin = padding;
+        mRefresh.setLayoutParams(lp);
     }
 
 
     private void initViews() {
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("登录");
+        setSupportActionBar(toolbar);*/
         mAccountView = (AutoCompleteTextView) findViewById(R.id.account);
         mPasswordView = (EditText) findViewById(R.id.password);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+        mCheckImage = (ImageView) findViewById(R.id.check_code_image);
+        mContainer = (RelativeLayout) findViewById(R.id.container);
+        mRefresh = (TextView) findViewById(R.id.refresh);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -182,47 +206,38 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
-        mSignInButton.setOnClickListener(new OnClickListener() {
+
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        RxView.clicks(signInButton).subscribe(new Action1<Void>() {
             @Override
-            public void onClick(View view) {
+            public void call(Void aVoid) {
                 attemptLogin();
             }
         });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-        mCheckImage = (ImageView) findViewById(R.id.check_code_image);
-        mContainer = (RelativeLayout) findViewById(R.id.container);
+        RxView.clicks(mRefresh).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                loadCheckImage();
+            }
+        });
     }
 
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private void attemptLogin() {
 
-        // Reset errors.
         mAccountView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
         final String account = mAccountView.getText().toString();
         final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
-
-        // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
-
-        // Check for a valid account address.
         if (TextUtils.isEmpty(account)) {
             mAccountView.setError(getString(R.string.error_field_required));
             focusView = mAccountView;
@@ -230,40 +245,20 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             showProgress(true);
-            final StringBuffer randcode = new StringBuffer();
-            Observable.from(recordPoint)
-                    .subscribe(new Observer<ImagePoint>() {
-                        @Override
-                        public void onCompleted() {
-                            randcode.deleteCharAt(randcode.length() - 1);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onNext(ImagePoint imagePoint) {
-                            randcode.append(imagePoint.getX()).append(",").append(imagePoint.getY()).append(",");
-                        }
-                    });
-
+            final StringBuffer randcode = getRandCode();
             mCheckImageService.checkImage(randcode.toString(), "sjrand")
+                    .compose(this.<CheckImage>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
-                    .map(new Func1<CheckImage, Observable<Login>>() {
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(new Func1<CheckImage, Observable<Login>>() {//验证图片
                         @Override
                         public Observable<Login> call(CheckImage checkImage) {
                             if ("1".equals(checkImage.getData().getResult())) {
                                 T.showShort(LoginActivity.this, "图片验证正确");
-                                login(account, password, randcode);
+                                return getLoginOb(account, password, randcode);
                             } else {
                                 showProgress(false);
                                 T.showShort(LoginActivity.this, "图片验证错误");
@@ -271,71 +266,68 @@ public class LoginActivity extends AppCompatActivity {
                             return null;
                         }
                     })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Observable<Login>>() {
+                    .subscribe(new Action1<Observable<Login>>() {//发起登录
                         @Override
                         public void call(Observable<Login> loginObservable) {
-                            if (loginObservable != null) {
-                                loginObservable.subscribe(new Action1<Login>() {
-                                    @Override
-                                    public void call(Login login) {
-                                        if ("Y".equals(login.getData().getLoginCheck())) {
-                                            T.showShort(LoginActivity.this, "登录成功");
-                                        } else {
-                                            T.showShort(LoginActivity.this, login.getMessages().get(0));
-                                        }
-                                    }
-                                }, new Action1<Throwable>() {
-                                    @Override
-                                    public void call(Throwable throwable) {
-
-                                    }
-                                });
-                            }
-                        }
-                    });
-      /*      Observable<Login> loginOb = mLoginService.login(account.trim(), password, randcode.toString()).subscribeOn(Schedulers.io());
-
-            Observable.concat(checkImageOb, loginOb)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Object>() {
-
-                        @Override
-                        public void call(Object o) {
-                            if (o instanceof CheckImage) {
-                                CheckImage checkImage = (CheckImage) o;
-                                if ("1".equals(checkImage.getData().getResult())) {
-                                    T.showShort(LoginActivity.this, "图片验证正确");
-                                } else {
-                                    T.showShort(LoginActivity.this, "图片验证错误");
-                                }
-                                showProgress(false);
-                            } else if (o instanceof Login) {
-                                Login login = (Login) o;
-                                if ("Y".equals(login.getData().getLoginCheck())) {
-                                    T.showShort(LoginActivity.this, "登录成功");
-                                } else {
-                                    T.showShort(LoginActivity.this, login.getMessages().get(0));
-                                }
-
-                            }
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();
                             showProgress(false);
+                            if (loginObservable != null) {
+                                login(loginObservable);
+                            }
                         }
                     });
-
-*/
         }
     }
 
-    private Observable<Login> login(String account, String password, StringBuffer randcode) {
+    @NonNull
+    private StringBuffer getRandCode() {
+        final StringBuffer randcode = new StringBuffer();
+        Observable.from(recordPoint)
+                .subscribe(new Observer<ImagePoint>() {
+                    @Override
+                    public void onCompleted() {
+                        randcode.deleteCharAt(randcode.length() - 1);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(ImagePoint imagePoint) {
+                        randcode.append(imagePoint.getX()).append(",").append(imagePoint.getY()).append(",");
+                    }
+                });
+        return randcode;
+    }
+
+    //登录
+    private void login(Observable<Login> loginObservable) {
+        loginObservable.observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<Login>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<Login>() {
+                    @Override
+                    public void call(Login login) {
+                        showProgress(false);
+                        if ("Y".equals(login.getData().getLoginCheck())) {
+                            T.showShort(LoginActivity.this, "登录成功");
+                        } else {
+                            T.showShort(LoginActivity.this, login.getMessages().get(0));
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        showProgress(false);
+                        T.showShort(LoginActivity.this, throwable.getMessage());
+                    }
+                });
+    }
+
+    private Observable<Login> getLoginOb(String account, String password, StringBuffer randcode) {
         return mLoginService.login(account, password, randcode.toString())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
+
     }
 
 
