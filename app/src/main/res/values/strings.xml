@@ -11,4 +11,6 @@
     <string name="error_invalid_password">请填写密码</string>
     <string name="error_incorrect_password">密码不正确</string>
     <string name="error_field_required">请填写12306账号</string>
+    <string name="drawer_open">打开</string>
+    <string name="drawer_close">关闭</string>
 </resources>

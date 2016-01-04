@@ -25,7 +25,6 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.trello.rxlifecycle.ActivityEvent;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import com.xf.sherlock.R;
 import com.xf.sherlock.bean.CheckImage;
 import com.xf.sherlock.bean.ImagePoint;
@@ -50,7 +49,7 @@ import rx.schedulers.Schedulers;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends RxAppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private int mScreenWidth;
     private int mCheckImageHeight;
@@ -184,9 +183,8 @@ public class LoginActivity extends RxAppCompatActivity {
 
 
     private void initViews() {
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("登录");
-        setSupportActionBar(toolbar);*/
+        initToolBar();
+        setTitle("登录");
         mAccountView = (AutoCompleteTextView) findViewById(R.id.account);
         mPasswordView = (EditText) findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);

@@ -3,8 +3,8 @@ package com.xf.sherlock.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,21 +13,27 @@ import com.squareup.picasso.Picasso;
 import com.xf.sherlock.R;
 import com.xf.sherlock.utils.RetrofitUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        initToolBar();
+        setTitle("查询");
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+        drawerToggle.syncState();
+        drawerLayout.setDrawerListener(drawerToggle);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.login://跳转到登录界面
+                        item.setChecked(true);
+                        drawerLayout.closeDrawers();
                         Intent intent = new Intent();
                         intent.setClass(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
@@ -37,12 +43,12 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                return false;
+                return true;
             }
         });
 
         //设置Picasso
-        Picasso picasso =new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build();
+        Picasso picasso = new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build();
         picasso.setIndicatorsEnabled(true);
         Picasso.setSingletonInstance(picasso);
     }
