@@ -1,15 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_main" tools:context=".activity.MainActivity">
+    tools:context=".activity.MainActivity"
+    tools:showIn="@layout/activity_main">
 
-    <TextView android:text="Hello World!"
+    <android.support.v7.widget.CardView xmlns:card="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content" />
+        android:layout_gravity="center"
+        card:cardBackgroundColor="@android:color/white"
+        card:cardElevation="@dimen/cardview_default_elevation"
+        card:cardMaxElevation="@dimen/cardview_default_elevation">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/common_small_margin">
+
+            <RelativeLayout
+                android:id="@+id/head"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:padding="@dimen/common_small_margin"
+                    android:text="出发地"
+                    android:textColor="@color/text_hint"
+                    android:textSize="@dimen/text_common_size" />
+
+                <TextView
+                    android:id="@+id/from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_from"
+                    android:hint="请选择城市"
+                    android:padding="@dimen/common_small_margin"
+                    android:textSize="@dimen/text_large_size" />
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/switch_icon" />
+
+                <TextView
+                    android:id="@+id/tv_to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:padding="@dimen/common_small_margin"
+                    android:text="目的地"
+                    android:textColor="@color/text_hint"
+                    android:textSize="@dimen/text_common_size" />
+
+                <TextView
+                    android:id="@+id/to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/tv_to"
+                    android:hint="请选择城市"
+                    android:padding="@dimen/common_small_margin"
+                    android:textSize="@dimen/text_large_size" />
+            </RelativeLayout>
+
+            <include
+                android:id="@+id/gap"
+                layout="@layout/gap_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/head" />
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/gap"
+                android:padding="@dimen/common_small_margin"
+                android:text="出发日期"
+                android:textColor="@color/text_hint"
+                android:textSize="@dimen/text_common_size" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/tv_date"
+                android:layout_toRightOf="@id/tv_date"
+                android:padding="@dimen/common_small_margin"
+                android:text="2016-1-6"
+                android:textSize="@dimen/text_common_size" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <Button
+        android:theme="@style/MyButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cardview"
+        android:layout_marginTop="30dp"
+        android:text="查询"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_common_size" />
 </RelativeLayout>

@@ -3,4 +3,7 @@
     <color name="colorPrimary">#00bcd4</color>
     <color name="colorPrimaryDark">#0097a7</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="common_window_bg">#EEEEEE</color>
+    <color name="gap_line">#cfd8dc</color>
+    <color name="text_hint">#888888</color>
 </resources>

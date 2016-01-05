@@ -49,5 +49,15 @@ public class CommonUtils {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpVal, getDM(context));
     }
 
+    /**
+     * 获取手机屏幕分辨率
+     *
+     * @param context
+     * @return
+     */
+    public static float getDisplayDensity(Context context) {
+        return getDM(context).density;
+    }
+
 
 }
