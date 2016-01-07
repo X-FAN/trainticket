@@ -15,7 +15,7 @@ import rx.Observable;
 public interface CheckImageService {
 
     @FormUrlEncoded
-    @POST("otn/passcodeNew/checkRandCodeAnsyn")
+    @POST("passcodeNew/checkRandCodeAnsyn")
     Observable<CheckImage> checkImage(@Field("randCode") @NonNull String randCode, @Field("rand") @NonNull String rand);
 
 }

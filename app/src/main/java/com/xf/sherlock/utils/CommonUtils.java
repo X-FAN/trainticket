@@ -1,6 +1,7 @@
 package com.xf.sherlock.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
@@ -57,6 +58,17 @@ public class CommonUtils {
      */
     public static float getDisplayDensity(Context context) {
         return getDM(context).density;
+    }
+
+    /**
+     * 跳转到指定的界面
+     *
+     * @param packageContext
+     * @param cls
+     */
+    public static void jump(Context packageContext, Class<?> cls) {
+        Intent intent = new Intent(packageContext, cls);
+        packageContext.startActivity(intent);
     }
 
 

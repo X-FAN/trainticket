@@ -14,6 +14,6 @@ import rx.Observable;
  */
 public interface LoginService {
     @FormUrlEncoded
-    @POST("otn/login/loginAysnSuggest")
+    @POST("login/loginAysnSuggest")
     Observable<Login> login(@Field("loginUserDTO.user_name") @NonNull String account, @Field("userDTO.password") @NonNull String password, @Field("randCode") @NonNull String randCode);
 }

@@ -3,6 +3,7 @@ package com.xf.sherlock.utils;
 import android.content.Context;
 
 import com.squareup.okhttp.OkHttpClient;
+import com.xf.sherlock.converterfactory.ToStringConverterFactory;
 import com.xf.sherlock.interceptor.AddCookiesInterceptor;
 import com.xf.sherlock.interceptor.ReceivedCookiesInterceptor;
 
@@ -31,7 +32,8 @@ public class RetrofitUtils {
 
     public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
-            retrofit = new Retrofit.Builder().baseUrl("https://kyfw.12306.cn/")
+            retrofit = new Retrofit.Builder().baseUrl("https://kyfw.12306.cn/otn/")
+                    .addConverterFactory(new ToStringConverterFactory())
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .client(getClient(context))

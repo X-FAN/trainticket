@@ -1,6 +1,5 @@
 package com.xf.sherlock.request;
 
-import retrofit.Response;
 import retrofit.http.GET;
 import rx.Observable;
 
@@ -9,5 +8,5 @@ import rx.Observable;
  */
 public interface GetTrainStationService {
     @GET("resources/js/framework/station_name.js")
-    Observable<Response> getTrainStation();
+    Observable<String> getTrainStation();
 }
