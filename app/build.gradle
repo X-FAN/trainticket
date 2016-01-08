@@ -41,4 +41,5 @@ dependencies {
     compile 'com.trello:rxlifecycle:0.4.0'
     compile 'com.trello:rxlifecycle-components:0.4.0'
     compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'de.greenrobot:eventbus:2.4.0'
 }

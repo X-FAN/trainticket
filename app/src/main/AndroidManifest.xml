@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -29,7 +30,7 @@
             android:label="@string/title_activity_login" />
         <activity
             android:name=".activity.ChooseStationActivity"
-            android:label="@string/title_activity_choose_station"/>
+            android:label="@string/title_activity_choose_station" />
     </application>
 
 </manifest>

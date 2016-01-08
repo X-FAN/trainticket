@@ -87,6 +87,17 @@
                 android:nestedScrollingEnabled="true"
                 android:scrollbars="none" />
 
+            <TextView
+                android:id="@+id/toast_text"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="30dp"
+                android:visibility="gone" />
+
             <com.xf.sherlock.widget.SideBar
                 android:id="@+id/sidebar"
                 android:layout_width="30.0dip"

@@ -41,6 +41,7 @@ public class BaseActivity extends RxAppCompatActivity {
                 });
     }
 
+
     public void setTitle(@NonNull String title) {
         mToolbar.setTitle(title);
     }

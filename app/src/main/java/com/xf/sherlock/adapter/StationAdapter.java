@@ -35,7 +35,7 @@ public class StationAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Station getItem(int position) {
         return filterList.get(position);
     }
 
@@ -57,7 +57,6 @@ public class StationAdapter extends BaseAdapter implements Filterable {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        // 如果当前位置等于该分类首字母的Char的位置 ，则认为是第一次出现
         if (station.isShow()) {
             viewHolder.letterTv.setVisibility(View.VISIBLE);
             viewHolder.letterTv.setText(station.getSection());
@@ -112,11 +111,6 @@ public class StationAdapter extends BaseAdapter implements Filterable {
     }
 
 
-
-    /**
-     * 根据分类的首字母的Char ascii值获取其第一次出现该首字母的位置
-     */
-
     public int getPositionForSection(String sectionIndex) {
         // TODO Auto-generated method stub
         for (int i = 0; i < getCount(); i++) {
@@ -127,15 +121,6 @@ public class StationAdapter extends BaseAdapter implements Filterable {
 
         return -1;
     }
-
-    /**
-     * 根据ListView的当前位置获取分类的首字母的Char ascii值
-     */
-  /*  @Override
-    public int getSectionForPosition(int position) {
-//        return filterList.get(position).getAlpha().charAt(0);
-        return 0;
-    }*/
 
     final static class ViewHolder {
         TextView letterTv;
