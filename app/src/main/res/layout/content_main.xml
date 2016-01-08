@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tv_from"
-                    android:hint="请选择城市"
+                    android:hint="出发车站"
                     android:padding="@dimen/common_small_margin"
                     android:textSize="@dimen/text_large_size" />
 
@@ -76,7 +76,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/tv_to"
                     android:gravity="end"
-                    android:hint="请选择城市"
+                    android:hint="到达车站"
                     android:padding="@dimen/common_small_margin"
                     android:textSize="@dimen/text_large_size" />
             </RelativeLayout>

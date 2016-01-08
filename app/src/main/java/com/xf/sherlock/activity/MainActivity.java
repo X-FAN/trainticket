@@ -25,7 +25,11 @@ import com.xf.sherlock.utils.T;
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity {
 
@@ -107,9 +111,9 @@ public class MainActivity extends BaseActivity {
         RxView.clicks(mQuery)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .subscribe(new Action1<Void>() {
+                .map(new Func1<Void, Observable<Void>>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public Observable<Void> call(Void aVoid) {
                         String fromStation = mFromStation.getText().toString();
                         String toStation = mToStation.getText().toString();
                         String date = mDate.getText().toString();
@@ -121,11 +125,33 @@ public class MainActivity extends BaseActivity {
                             T.showShort(MainActivity.this, "出发车站与到达车站相同");
                         } else if (TextUtils.isEmpty(date)) {
                             T.showShort(MainActivity.this, "请选择出发日期");
+                        } else {
+                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY));
                         }
-                        mQueryService.getCookie();
+                        return null;
+                    }
+                })
+                .subscribe(new Action1<Observable<Void>>() {
+                    @Override
+                    public void call(Observable<Void> observable) {
+                        if (observable != null) {
+                            observable.subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Action1<Void>() {
+                                        @Override
+                                        public void call(Void aVoid) {
+
+                                        }
+                                    });
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
 
                     }
                 });
+
     }
 
  /*   private void initPicasso() {

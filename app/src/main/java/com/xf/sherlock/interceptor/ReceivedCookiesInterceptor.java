@@ -24,7 +24,6 @@ public class ReceivedCookiesInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        L.e("接收cookie");
         Response originalResponse = chain.proceed(chain.request());
         if (!originalResponse.headers("Set-Cookie").isEmpty()) {
             final StringBuffer cookieBuffer = new StringBuffer();
@@ -45,6 +44,7 @@ public class ReceivedCookiesInterceptor implements Interceptor {
             SharedPreferences sharedPreferences = context.getSharedPreferences("cookie", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("cookie", cookieBuffer.toString());
+            L.e("接收cookie",cookieBuffer.toString());
             editor.commit();
         }
 
