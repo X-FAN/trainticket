@@ -10,11 +10,17 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.jakewharton.rxbinding.view.RxView;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.trello.rxlifecycle.ActivityEvent;
+import com.xf.sherlock.MyConstant;
 import com.xf.sherlock.R;
 import com.xf.sherlock.event.ChooseStationEvent;
 import com.xf.sherlock.request.QueryService;
@@ -39,6 +45,7 @@ public class MainActivity extends BaseActivity {
     private TextView mToStation;
     private Button mQuery;//查询按钮
     private TextView mDate;//出发日期
+    private ImageView mSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +84,7 @@ public class MainActivity extends BaseActivity {
         mToStation = (TextView) findViewById(R.id.to);
         mQuery = (Button) findViewById(R.id.query);
         mDate = (TextView) findViewById(R.id.date);
+        mSwitch = (ImageView) findViewById(R.id.switch_button);
         mQueryService = RetrofitUtils.getInstance(this).create(QueryService.class);
         addListener(drawerLayout, navigationView, head);
     }
@@ -108,6 +116,27 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
         });
+
+        RxView.clicks(mSwitch)
+                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        mQuery.setEnabled(false);
+                        YoYo.with(Techniques.SlideOutDown).duration(MyConstant.ANI_TIME).withListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                            }
+                        }).playOn(mSwitch);
+
+
+                    }
+
+                });
+
+        //查询
         RxView.clicks(mQuery)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
@@ -164,9 +193,11 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(ChooseStationEvent chooseStationEvent) {
         if (chooseStationEvent.getFromStation() != null) {
             mFromStation.setText(chooseStationEvent.getFromStation().getStationName());
+            mFromStation.setTag(chooseStationEvent.getFromStation());
         }
         if (chooseStationEvent.getToStaion() != null) {
             mToStation.setText(chooseStationEvent.getToStaion().getStationName());
+            mToStation.setTag(chooseStationEvent.getToStaion());
         }
     }
 
