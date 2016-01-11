@@ -22,9 +22,13 @@ import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.xf.sherlock.MyConstant;
 import com.xf.sherlock.R;
+import com.xf.sherlock.animator.RollAnimator;
+import com.xf.sherlock.bean.Station;
+import com.xf.sherlock.bean.TrainTicketResult;
 import com.xf.sherlock.event.ChooseStationEvent;
 import com.xf.sherlock.request.QueryService;
 import com.xf.sherlock.utils.CommonUtils;
+import com.xf.sherlock.utils.L;
 import com.xf.sherlock.utils.RetrofitUtils;
 import com.xf.sherlock.utils.T;
 
@@ -32,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -40,6 +43,8 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends BaseActivity {
 
     private QueryService mQueryService;
+    private Observable<TrainTicketResult> mTrainTicketResultOb;
+    private Observable<String> mResult;
 
     private TextView mFromStation;
     private TextView mToStation;
@@ -124,23 +129,39 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void call(Void aVoid) {
                         mQuery.setEnabled(false);
-                        YoYo.with(Techniques.SlideOutDown).duration(MyConstant.ANI_TIME).withListener(new AnimatorListenerAdapter() {
+                        YoYo.with(new RollAnimator()).duration(MyConstant.ANI_TIME).playOn(mSwitch);
+                        YoYo.with(Techniques.FlipOutX).duration(MyConstant.ANI_TIME).withListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
+                                String temp = mFromStation.getText().toString();
+                                Station tempStation = (Station) mFromStation.getTag();
+                                mFromStation.setText(mToStation.getText());
+                                mFromStation.setTag(mToStation.getTag());
+                                mToStation.setText(temp);
+                                mToStation.setTag(tempStation);
+                                YoYo.with(Techniques.FlipInX).duration(MyConstant.ANI_TIME).withListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        mQuery.setEnabled(true);
+                                    }
+                                }).playOn(mFromStation);
                             }
-                        }).playOn(mSwitch);
-
-
+                        }).playOn(mFromStation);
+                        YoYo.with(Techniques.FlipOutX).duration(MyConstant.ANI_TIME).withListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                YoYo.with(Techniques.FlipInX).duration(MyConstant.ANI_TIME).playOn(mToStation);
+                            }
+                        }).playOn(mToStation);
                     }
 
                 });
 
         //查询
-        RxView.clicks(mQuery)
+ /*       RxView.clicks(mQuery)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .map(new Func1<Void, Observable<Void>>() {
+                .map(new Func1<Void, Observable<Void>>() {//点击事件
                     @Override
                     public Observable<Void> call(Void aVoid) {
                         String fromStation = mFromStation.getText().toString();
@@ -155,39 +176,115 @@ public class MainActivity extends BaseActivity {
                         } else if (TextUtils.isEmpty(date)) {
                             T.showShort(MainActivity.this, "请选择出发日期");
                         } else {
-                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY));
+                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY)).subscribeOn(Schedulers.io());
                         }
                         return null;
                     }
                 })
-                .subscribe(new Action1<Observable<Void>>() {
+                .map(new Func1<Observable<Void>, Observable<String>>() {//获取cookie
                     @Override
-                    public void call(Observable<Void> observable) {
-                        if (observable != null) {
-                            observable.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Action1<Void>() {
-                                        @Override
-                                        public void call(Void aVoid) {
+                    public Observable<String> call(Observable<Void> voidObservable) {
+                        if(voidObservable!=null){
+                            final String fromStation = ((Station) mFromStation.getTag()).getStationCode();
+                            final String toStation = ((Station) mToStation.getTag()).getStationCode();
 
-                                        }
-                                    });
+                            voidObservable.subscribe(new Action1<Void>() {
+                                @Override
+                                public void call(Void aVoid) {
+                                    mResult = mQueryService.getTrainTicketResult("queryT", "2016-01-18", fromStation, toStation);
+                                }
+                            }, new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    L.e(throwable.getMessage());
+                                }
+                            });
                         }
+
+                        return mResult;
                     }
-                }, new Action1<Throwable>() {
+                })
+                .subscribe(new Action1<Observable<String>>() {//获取结果
                     @Override
-                    public void call(Throwable throwable) {
+                    public void call(Observable<String> stringObservable) {
+
+                        stringObservable.subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String s) {
+
+                            }
+                        });
+                    }
+                }); */
+
+        RxView.clicks(mQuery)
+                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .map(new Func1<Void, Observable<Void>>() {//点击事件
+                    @Override
+                    public Observable<Void> call(Void aVoid) {
+                        String fromStation = mFromStation.getText().toString();
+                        String toStation = mToStation.getText().toString();
+                        String date = mDate.getText().toString();
+                        if (TextUtils.isEmpty(fromStation)) {
+                            T.showShort(MainActivity.this, "请选择出发车站");
+                        } else if (TextUtils.isEmpty(toStation)) {
+                            T.showShort(MainActivity.this, "请选择到达车站");
+                        } else if (fromStation.equals(toStation)) {
+                            T.showShort(MainActivity.this, "出发车站与到达车站相同");
+                        } else if (TextUtils.isEmpty(date)) {
+                            T.showShort(MainActivity.this, "请选择出发日期");
+                        } else {
+                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY)).subscribeOn(Schedulers.io());
+                        }
+                        return null;
+                    }
+                })
+                .map(new Func1<Observable<Void>, Observable<String>>() {//获取cookie
+                    @Override
+                    public Observable<String> call(Observable<Void> voidObservable) {
+                        if (voidObservable != null) {
+                            final String fromStation = ((Station) mFromStation.getTag()).getStationCode();
+                            final String toStation = ((Station) mToStation.getTag()).getStationCode();
+
+                            voidObservable.subscribe(new Action1<Void>() {
+                                @Override
+                                public void call(Void aVoid) {
+                                    mResult = mQueryService.getTrainTicketResult("2016-01-18", fromStation, toStation);
+                                }
+                            }, new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    L.e(throwable.getMessage());
+                                }
+                            });
+                        }
+
+                        return mResult;
+                    }
+                })
+                .subscribe(new Action1<Observable<String>>() {//获取结果
+                    @Override
+                    public void call(Observable<String> stringObservable) {
+
+                        if (stringObservable != null) {
+                            stringObservable.subscribe(new Action1<String>() {
+                                @Override
+                                public void call(String s) {
+                                    L.e(s);
+                                }
+                            }, new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    L.e(throwable.getMessage());
+                                }
+                            });
+                        }
 
                     }
                 });
 
     }
-
- /*   private void initPicasso() {
-        Picasso picasso = new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build();
-        picasso.setIndicatorsEnabled(true);
-        Picasso.setSingletonInstance(picasso);
-    }*/
 
     //更新选择的车站
     public void onEventMainThread(ChooseStationEvent chooseStationEvent) {

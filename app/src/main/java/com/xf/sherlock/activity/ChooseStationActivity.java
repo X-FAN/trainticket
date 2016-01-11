@@ -115,6 +115,7 @@ public class ChooseStationActivity extends BaseActivity {
                 });
         RxAdapterView.itemClicks(mStationShow)
                 .compose(this.<Integer>bindUntilEvent(ActivityEvent.DESTROY))
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer integer) {
