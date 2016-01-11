@@ -220,9 +220,54 @@ public class MainActivity extends BaseActivity {
         RxView.clicks(mQuery)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .map(new Func1<Void, Observable<Void>>() {//点击事件
+                .flatMap(new Func1<Void, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(Void aVoid) {
+                        L.e(Thread.currentThread().getName());
+                        String fromStation = mFromStation.getText().toString();
+                        String toStation = mToStation.getText().toString();
+                        String date = mDate.getText().toString();
+                        if (TextUtils.isEmpty(fromStation)) {
+                            T.showShort(MainActivity.this, "请选择出发车站");
+                        } else if (TextUtils.isEmpty(toStation)) {
+                            T.showShort(MainActivity.this, "请选择到达车站");
+                        } else if (fromStation.equals(toStation)) {
+                            T.showShort(MainActivity.this, "出发车站与到达车站相同");
+                        } else if (TextUtils.isEmpty(date)) {
+                            T.showShort(MainActivity.this, "请选择出发日期");
+                        } else {
+                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY)).subscribeOn(Schedulers.io());
+                        }
+                        return null;
+
+                    }
+                })
+                .flatMap(new Func1<Void, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(Void aVoid) {
+                        L.e(Thread.currentThread().getName());
+                        return mQueryService.getTrainTicketResult("2016-01-18", "NJH", "PPP");
+
+
+                    }
+                })
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        L.e(s);
+                        L.e(Thread.currentThread().getName());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        L.e("error:" + throwable.getMessage());
+                        L.e(Thread.currentThread().getName());
+                    }
+                });
+                /*.map(new Func1<Void, Observable<Void>>() {//点击事件
+                    @Override
+                    public Observable<Void> call(Void aVoid) {
+                        Observable.just("");
                         String fromStation = mFromStation.getText().toString();
                         String toStation = mToStation.getText().toString();
                         String date = mDate.getText().toString();
@@ -282,7 +327,7 @@ public class MainActivity extends BaseActivity {
                         }
 
                     }
-                });
+                });*/
 
     }
 
