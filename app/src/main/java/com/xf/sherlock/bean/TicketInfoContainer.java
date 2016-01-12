@@ -4,7 +4,7 @@ package com.xf.sherlock.bean;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Datum {
+public class TicketInfoContainer {
 
     @SerializedName("queryLeftNewDTO")
     @Expose

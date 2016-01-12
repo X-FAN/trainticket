@@ -2,6 +2,8 @@ package com.xf.sherlock.request;
 
 import android.support.annotation.NonNull;
 
+import com.xf.sherlock.bean.TrainTicketResult;
+
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -27,5 +29,5 @@ public interface QueryService {
     Observable<String> log(@Query("leftTicketDTO.train_date") @NonNull String date, @Query("leftTicketDTO.from_station") @NonNull String fromStation, @Query("leftTicketDTO.to_station") @NonNull String toStation, @Query("purpose_codes") @NonNull String type);*/
 
     @GET("leftTicket/{requestUrl}")
-    Observable<String> getTrainTicketResult(@Path("requestUrl") @NonNull String requestUrl, @Query("leftTicketDTO.train_date") @NonNull String date, @Query("leftTicketDTO.from_station") @NonNull String fromStation, @Query("leftTicketDTO.to_station") @NonNull String toStation, @Query("purpose_codes") @NonNull String type);
+    Observable<TrainTicketResult> getTrainTicketResult(@Path("requestUrl") @NonNull String requestUrl, @Query("leftTicketDTO.train_date") @NonNull String date, @Query("leftTicketDTO.from_station") @NonNull String fromStation, @Query("leftTicketDTO.to_station") @NonNull String toStation, @Query("purpose_codes") @NonNull String type);
 }

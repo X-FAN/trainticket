@@ -8,4 +8,5 @@ public class MyConstant {
     }
 
     public static final long ANI_TIME = 500;//动画持续时间
+    public static final String QUERY_CONDITION = "query_condition";
 }

@@ -31,6 +31,15 @@
         <activity
             android:name=".activity.ChooseStationActivity"
             android:label="@string/title_activity_choose_station" />
+        <activity
+            android:name=".activity.QueryResultActivity"
+            android:label="@string/title_activity_query_result"
+            android:parentActivityName=".activity.BaseActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xf.sherlock.activity.BaseActivity" />
+        </activity>
     </application>
 
 </manifest>

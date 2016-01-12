@@ -20,7 +20,7 @@ public class TrainTicketResult {
     private Integer httpstatus;
     @SerializedName("data")
     @Expose
-    private List<Datum> data = new ArrayList<Datum>();
+    private List<TicketInfoContainer> data = new ArrayList<TicketInfoContainer>();
     @SerializedName("messages")
     @Expose
     private List<Object> messages = new ArrayList<Object>();
@@ -87,7 +87,7 @@ public class TrainTicketResult {
      * @return
      *     The data
      */
-    public List<Datum> getData() {
+    public List<TicketInfoContainer> getData() {
         return data;
     }
 
@@ -96,7 +96,7 @@ public class TrainTicketResult {
      * @param data
      *     The data
      */
-    public void setData(List<Datum> data) {
+    public void setData(List<TicketInfoContainer> data) {
         this.data = data;
     }
 

@@ -1,6 +1,7 @@
 package com.xf.sherlock.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,27 +24,20 @@ import com.trello.rxlifecycle.ActivityEvent;
 import com.xf.sherlock.MyConstant;
 import com.xf.sherlock.R;
 import com.xf.sherlock.animator.RollAnimator;
+import com.xf.sherlock.bean.QueryCondition;
 import com.xf.sherlock.bean.Station;
-import com.xf.sherlock.bean.TrainTicketResult;
 import com.xf.sherlock.event.ChooseStationEvent;
-import com.xf.sherlock.request.QueryService;
 import com.xf.sherlock.utils.CommonUtils;
-import com.xf.sherlock.utils.L;
-import com.xf.sherlock.utils.RetrofitUtils;
 import com.xf.sherlock.utils.T;
 
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
-import rx.Observable;
 import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity {
 
-    private QueryService mQueryService;
-    private Observable<TrainTicketResult> mTrainTicketResultOb;
+
     private TextView mFromStation;
     private TextView mToStation;
     private Button mQuery;//查询按钮
@@ -88,7 +82,6 @@ public class MainActivity extends BaseActivity {
         mQuery = (Button) findViewById(R.id.query);
         mDate = (TextView) findViewById(R.id.date);
         mSwitch = (ImageView) findViewById(R.id.switch_button);
-        mQueryService = RetrofitUtils.getInstance(this).create(QueryService.class);
         addListener(drawerLayout, navigationView, head);
     }
 
@@ -159,50 +152,40 @@ public class MainActivity extends BaseActivity {
         RxView.clicks(mQuery)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .flatMap(new Func1<Void, Observable<Void>>() {
+                .subscribe(new Action1<Void>() {
                     @Override
-                    public Observable<Void> call(Void aVoid) {
-                        L.e(Thread.currentThread().getName());
-                        String fromStation = mFromStation.getText().toString();
-                        String toStation = mToStation.getText().toString();
-                        String date = mDate.getText().toString();
-                        if (TextUtils.isEmpty(fromStation)) {
-                            T.showShort(MainActivity.this, "请选择出发车站");
-                        } else if (TextUtils.isEmpty(toStation)) {
-                            T.showShort(MainActivity.this, "请选择到达车站");
-                        } else if (fromStation.equals(toStation)) {
-                            T.showShort(MainActivity.this, "出发车站与到达车站相同");
-                        } else if (TextUtils.isEmpty(date)) {
-                            T.showShort(MainActivity.this, "请选择出发日期");
-                        } else {
-                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY)).subscribeOn(Schedulers.io());
+                    public void call(Void aVoid) {
+                        if (check()) {
+                            Station fromStation = (Station) mFromStation.getTag();
+                            Station toStation = (Station) mToStation.getTag();
+                            String date = mDate.getText().toString();
+                            Intent intent = new Intent();
+                            intent.putExtra(MyConstant.QUERY_CONDITION, new QueryCondition(fromStation, toStation, date));
+                            CommonUtils.jump(intent, MainActivity.this, QueryResultActivity.class);
                         }
-                        return null;
-
-                    }
-                })
-                .flatMap(new Func1<Void, Observable<String>>() {
-
-                    @Override
-                    public Observable<String> call(Void aVoid) {
-                        return mQueryService.getTrainTicketResult("queryT", "2016-01-18", "YZV", "ZAF", "ADULT");
-                    }
-                })
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        L.e(s);
-                        L.e(Thread.currentThread().getName());
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        L.e("error:" + throwable.getMessage());
-                        L.e(Thread.currentThread().getName());
                     }
                 });
 
 
+    }
+
+    //检验输入的条件
+    private boolean check() {
+        String fromStation = mFromStation.getText().toString();
+        String toStation = mToStation.getText().toString();
+        String date = mDate.getText().toString();
+        if (TextUtils.isEmpty(fromStation)) {
+            T.showShort(MainActivity.this, "请选择出发车站");
+        } else if (TextUtils.isEmpty(toStation)) {
+            T.showShort(MainActivity.this, "请选择到达车站");
+        } else if (fromStation.equals(toStation)) {
+            T.showShort(MainActivity.this, "出发车站与到达车站相同");
+        } else if (TextUtils.isEmpty(date)) {
+            T.showShort(MainActivity.this, "请选择出发日期");
+        } else {
+            return true;
+        }
+        return false;
     }
 
     //更新选择的车站

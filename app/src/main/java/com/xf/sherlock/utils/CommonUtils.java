@@ -71,5 +71,16 @@ public class CommonUtils {
         packageContext.startActivity(intent);
     }
 
+    /**
+     * 跳转到指定的界面
+     *
+     * @param packageContext
+     * @param cls
+     */
+    public static void jump(Intent intent, Context packageContext, Class<?> cls) {
+        intent.setClass(packageContext, cls);
+        packageContext.startActivity(intent);
+    }
+
 
 }

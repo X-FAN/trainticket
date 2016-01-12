@@ -5,6 +5,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="common_margin">16dp</dimen>
     <dimen name="common_small_margin">5dp</dimen>
+    <dimen name="common_middle_margin">10dp</dimen>
     <dimen name="common_radius">5dp</dimen>
     <dimen name="text_common_size">14sp</dimen>
     <dimen name="text_large_size">22sp</dimen>

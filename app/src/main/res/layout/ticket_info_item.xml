@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/common_margin"
+    android:orientation="vertical"
+    android:padding="@dimen/common_middle_margin"
+    card_view:cardCornerRadius="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/train_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:minWidth="80dp"
+            android:padding="@dimen/common_middle_margin"
+            android:text="K233"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_large_size" />
+
+        <TextView
+            android:id="@+id/from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/train_num"
+            android:layout_toRightOf="@+id/train_num"
+            android:padding="@dimen/common_small_margin"
+            android:text="10:30 南京南"
+            android:textColor="@color/light_red"
+            android:textSize="@dimen/text_common_size" />
+
+        <TextView
+            android:id="@+id/to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/from"
+            android:layout_toEndOf="@+id/train_num"
+            android:layout_toRightOf="@+id/train_num"
+            android:padding="@dimen/common_small_margin"
+            android:text="11:00 北京"
+            android:textSize="@dimen/text_common_size" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/common_small_margin"
+            android:text="13小时12分"
+            android:textSize="@dimen/text_common_size" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

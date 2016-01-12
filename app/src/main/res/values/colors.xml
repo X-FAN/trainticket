@@ -6,4 +6,5 @@
     <color name="common_window_bg">#EEEEEE</color>
     <color name="gap_line">#cfd8dc</color>
     <color name="text_hint">#888888</color>
+    <color name="light_red">#CC6D56</color>
 </resources>
