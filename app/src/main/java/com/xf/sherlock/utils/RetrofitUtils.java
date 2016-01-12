@@ -3,6 +3,7 @@ package com.xf.sherlock.utils;
 import android.content.Context;
 
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import com.xf.sherlock.converterfactory.ToStringConverterFactory;
 import com.xf.sherlock.interceptor.AddCookiesInterceptor;
 import com.xf.sherlock.interceptor.ReceivedCookiesInterceptor;
@@ -44,9 +45,12 @@ public class RetrofitUtils {
 
 
     public static OkHttpClient getClient(Context context) {
+        HttpLoggingInterceptor log = new HttpLoggingInterceptor();
+        log.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = getUnsafeOkHttpClient();
         client.interceptors().add(new ReceivedCookiesInterceptor(context));
         client.interceptors().add(new AddCookiesInterceptor(context));
+        client.interceptors().add(log);
         /*client.networkInterceptors().add(new StethoInterceptor());//一个调试工具，具体搜Stetho
         return new OkClient(client);*/
         return client;
@@ -93,7 +97,6 @@ public class RetrofitUtils {
 
                 }
             });
-
             return okHttpClient;
         } catch (Exception e) {
             throw new RuntimeException(e);

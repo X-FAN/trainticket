@@ -44,8 +44,6 @@ public class MainActivity extends BaseActivity {
 
     private QueryService mQueryService;
     private Observable<TrainTicketResult> mTrainTicketResultOb;
-    private Observable<String> mResult;
-
     private TextView mFromStation;
     private TextView mToStation;
     private Button mQuery;//查询按钮
@@ -158,65 +156,6 @@ public class MainActivity extends BaseActivity {
                 });
 
         //查询
- /*       RxView.clicks(mQuery)
-                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .map(new Func1<Void, Observable<Void>>() {//点击事件
-                    @Override
-                    public Observable<Void> call(Void aVoid) {
-                        String fromStation = mFromStation.getText().toString();
-                        String toStation = mToStation.getText().toString();
-                        String date = mDate.getText().toString();
-                        if (TextUtils.isEmpty(fromStation)) {
-                            T.showShort(MainActivity.this, "请选择出发车站");
-                        } else if (TextUtils.isEmpty(toStation)) {
-                            T.showShort(MainActivity.this, "请选择到达车站");
-                        } else if (fromStation.equals(toStation)) {
-                            T.showShort(MainActivity.this, "出发车站与到达车站相同");
-                        } else if (TextUtils.isEmpty(date)) {
-                            T.showShort(MainActivity.this, "请选择出发日期");
-                        } else {
-                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY)).subscribeOn(Schedulers.io());
-                        }
-                        return null;
-                    }
-                })
-                .map(new Func1<Observable<Void>, Observable<String>>() {//获取cookie
-                    @Override
-                    public Observable<String> call(Observable<Void> voidObservable) {
-                        if(voidObservable!=null){
-                            final String fromStation = ((Station) mFromStation.getTag()).getStationCode();
-                            final String toStation = ((Station) mToStation.getTag()).getStationCode();
-
-                            voidObservable.subscribe(new Action1<Void>() {
-                                @Override
-                                public void call(Void aVoid) {
-                                    mResult = mQueryService.getTrainTicketResult("queryT", "2016-01-18", fromStation, toStation);
-                                }
-                            }, new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-                                    L.e(throwable.getMessage());
-                                }
-                            });
-                        }
-
-                        return mResult;
-                    }
-                })
-                .subscribe(new Action1<Observable<String>>() {//获取结果
-                    @Override
-                    public void call(Observable<String> stringObservable) {
-
-                        stringObservable.subscribe(new Action1<String>() {
-                            @Override
-                            public void call(String s) {
-
-                            }
-                        });
-                    }
-                }); */
-
         RxView.clicks(mQuery)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
@@ -243,12 +182,10 @@ public class MainActivity extends BaseActivity {
                     }
                 })
                 .flatMap(new Func1<Void, Observable<String>>() {
+
                     @Override
                     public Observable<String> call(Void aVoid) {
-                        L.e(Thread.currentThread().getName());
-                        return mQueryService.getTrainTicketResult("2016-01-18", "NJH", "PPP");
-
-
+                        return mQueryService.getTrainTicketResult("queryT", "2016-01-18", "YZV", "ZAF", "ADULT");
                     }
                 })
                 .subscribe(new Action1<String>() {
@@ -264,70 +201,7 @@ public class MainActivity extends BaseActivity {
                         L.e(Thread.currentThread().getName());
                     }
                 });
-                /*.map(new Func1<Void, Observable<Void>>() {//点击事件
-                    @Override
-                    public Observable<Void> call(Void aVoid) {
-                        Observable.just("");
-                        String fromStation = mFromStation.getText().toString();
-                        String toStation = mToStation.getText().toString();
-                        String date = mDate.getText().toString();
-                        if (TextUtils.isEmpty(fromStation)) {
-                            T.showShort(MainActivity.this, "请选择出发车站");
-                        } else if (TextUtils.isEmpty(toStation)) {
-                            T.showShort(MainActivity.this, "请选择到达车站");
-                        } else if (fromStation.equals(toStation)) {
-                            T.showShort(MainActivity.this, "出发车站与到达车站相同");
-                        } else if (TextUtils.isEmpty(date)) {
-                            T.showShort(MainActivity.this, "请选择出发日期");
-                        } else {
-                            return mQueryService.getCookie().compose(MainActivity.this.<Void>bindUntilEvent(ActivityEvent.DESTROY)).subscribeOn(Schedulers.io());
-                        }
-                        return null;
-                    }
-                })
-                .map(new Func1<Observable<Void>, Observable<String>>() {//获取cookie
-                    @Override
-                    public Observable<String> call(Observable<Void> voidObservable) {
-                        if (voidObservable != null) {
-                            final String fromStation = ((Station) mFromStation.getTag()).getStationCode();
-                            final String toStation = ((Station) mToStation.getTag()).getStationCode();
 
-                            voidObservable.subscribe(new Action1<Void>() {
-                                @Override
-                                public void call(Void aVoid) {
-                                    mResult = mQueryService.getTrainTicketResult("2016-01-18", fromStation, toStation);
-                                }
-                            }, new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-                                    L.e(throwable.getMessage());
-                                }
-                            });
-                        }
-
-                        return mResult;
-                    }
-                })
-                .subscribe(new Action1<Observable<String>>() {//获取结果
-                    @Override
-                    public void call(Observable<String> stringObservable) {
-
-                        if (stringObservable != null) {
-                            stringObservable.subscribe(new Action1<String>() {
-                                @Override
-                                public void call(String s) {
-                                    L.e(s);
-                                }
-                            }, new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-                                    L.e(throwable.getMessage());
-                                }
-                            });
-                        }
-
-                    }
-                });*/
 
     }
 
@@ -345,19 +219,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
