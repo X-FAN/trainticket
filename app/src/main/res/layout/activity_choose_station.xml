@@ -57,7 +57,6 @@
                 android:drawablePadding="@dimen/common_small_margin"
                 android:drawableStart="@drawable/from"
                 android:padding="@dimen/common_small_margin"
-                android:text="北京"
                 android:textSize="@dimen/text_common_size" />
 
             <EditText
@@ -70,7 +69,6 @@
                 android:drawablePadding="@dimen/common_small_margin"
                 android:drawableStart="@drawable/to"
                 android:padding="@dimen/common_small_margin"
-                android:text="南京"
                 android:textSize="@dimen/text_common_size" />
         </LinearLayout>
 

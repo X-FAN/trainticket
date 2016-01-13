@@ -25,15 +25,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login" />
+        <activity android:name=".activity.LoginActivity" />
         <activity
             android:name=".activity.ChooseStationActivity"
             android:label="@string/title_activity_choose_station" />
         <activity
             android:name=".activity.QueryResultActivity"
             android:label="@string/title_activity_query_result"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.DatePickActivity"
+            android:label="@string/title_activity_date_pick"
             android:parentActivityName=".activity.BaseActivity"
             android:theme="@style/AppTheme">
             <meta-data

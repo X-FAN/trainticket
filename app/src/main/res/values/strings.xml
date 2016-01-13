@@ -15,4 +15,5 @@
     <string name="drawer_close">关闭</string>
     <string name="title_activity_choose_station">ChooseStationActivity</string>
     <string name="title_activity_query_result">QueryResultActivity</string>
+    <string name="title_activity_date_pick">DatePickActivity</string>
 </resources>

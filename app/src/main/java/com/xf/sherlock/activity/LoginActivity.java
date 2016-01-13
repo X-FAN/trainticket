@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -77,6 +77,7 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
         initViews();
         initParams();
         getCheckImage();
@@ -184,7 +185,7 @@ public class LoginActivity extends BaseActivity {
 
     private void initViews() {
         initToolBar();
-        setTitle("登录");
+        setTitle("登录12306");
         mAccountView = (AutoCompleteTextView) findViewById(R.id.account);
         mPasswordView = (EditText) findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);

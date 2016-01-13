@@ -18,8 +18,8 @@ import rx.functions.Action1;
  * Created by TC on 2016/1/4.
  */
 public class BaseActivity extends RxAppCompatActivity {
-
     protected Toolbar mToolbar;
+    private OnFinishListener onFinishListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,24 +29,46 @@ public class BaseActivity extends RxAppCompatActivity {
     public void initToolBar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         RxToolbar.navigationClicks(mToolbar)
                 .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        finish();
+                        if (onFinishListener == null) {
+                            finish();
+                        } else {
+                            onFinishListener.onFinish();
+                            finish();
+                        }
+
                     }
                 });
     }
 
 
     public void setTitle(@NonNull String title) {
-        mToolbar.setTitle(title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     public void setTitle(@StringRes int titleId) {
-        mToolbar.setTitle(titleId);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(titleId);
+        }
+
+    }
+
+    //处理界面关闭前的动作
+    interface OnFinishListener {
+        void onFinish();
+    }
+
+    public void setOnFinishListener(OnFinishListener onFinishListener) {
+        this.onFinishListener = onFinishListener;
     }
 }

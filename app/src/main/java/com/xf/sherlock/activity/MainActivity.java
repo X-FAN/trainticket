@@ -20,20 +20,28 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.jakewharton.rxbinding.view.RxView;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.xf.sherlock.MyConstant;
 import com.xf.sherlock.R;
 import com.xf.sherlock.animator.RollAnimator;
 import com.xf.sherlock.bean.QueryCondition;
 import com.xf.sherlock.bean.Station;
+import com.xf.sherlock.event.ChooseDateEvent;
 import com.xf.sherlock.event.ChooseStationEvent;
+import com.xf.sherlock.event.SendCurrentDateEvent;
 import com.xf.sherlock.utils.CommonUtils;
 import com.xf.sherlock.utils.T;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class MainActivity extends BaseActivity {
 
@@ -43,11 +51,14 @@ public class MainActivity extends BaseActivity {
     private Button mQuery;//查询按钮
     private TextView mDate;//出发日期
     private ImageView mSwitch;
+    @Bind(R.id.date)
+    TextView mChooseDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         initViews();
     }
@@ -81,6 +92,9 @@ public class MainActivity extends BaseActivity {
         mToStation = (TextView) findViewById(R.id.to);
         mQuery = (Button) findViewById(R.id.query);
         mDate = (TextView) findViewById(R.id.date);
+        Calendar todayCal = Calendar.getInstance();
+        setDate(CalendarDay.from(todayCal));
+        mDate.setTag(CalendarDay.from(todayCal));
         mSwitch = (ImageView) findViewById(R.id.switch_button);
         addListener(drawerLayout, navigationView, head);
     }
@@ -118,7 +132,7 @@ public class MainActivity extends BaseActivity {
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(new Action1<Void>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call(Void aVoid) {//添加动画
                         mQuery.setEnabled(false);
                         YoYo.with(new RollAnimator()).duration(MyConstant.ANI_TIME).playOn(mSwitch);
                         YoYo.with(Techniques.FlipOutX).duration(MyConstant.ANI_TIME).withListener(new AnimatorListenerAdapter() {
@@ -166,6 +180,19 @@ public class MainActivity extends BaseActivity {
                     }
                 });
 
+        //选择出发日期
+        RxView.clicks(mChooseDate)
+                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        CalendarDay calendarDay = (CalendarDay) mDate.getTag();
+                        EventBus.getDefault().postSticky(new SendCurrentDateEvent(calendarDay));
+                        CommonUtils.jump(MainActivity.this, DatePickActivity.class);
+                    }
+                });
+
 
     }
 
@@ -188,8 +215,44 @@ public class MainActivity extends BaseActivity {
         return false;
     }
 
-    //更新选择的车站
-    public void onEventMainThread(ChooseStationEvent chooseStationEvent) {
+    //更新UI
+    public void onEventMainThread(Object event) {
+        if (event instanceof ChooseStationEvent) {
+            handChooseStationEvent((ChooseStationEvent) event);
+            EventBus.getDefault().removeStickyEvent(event);
+        } else if (event instanceof ChooseDateEvent) {
+            handChooseDateEvent((ChooseDateEvent) event);
+            EventBus.getDefault().removeStickyEvent(event);
+        }
+
+    }
+
+    private void handChooseDateEvent(ChooseDateEvent event) {
+        ChooseDateEvent chooseDateEvent = event;
+        final CalendarDay selectedCal = chooseDateEvent.getCalendarDay();
+        setDate(selectedCal);
+    }
+
+    private void setDate(final CalendarDay selectedCal) {
+
+        rx.Observable.just(selectedCal).map(new Func1<CalendarDay, String>() {
+            @Override
+            public String call(CalendarDay calendarDay) {//处理日期格式
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                return sdf.format(calendarDay.getDate());
+            }
+        }).subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mDate.setText(s);
+            }
+        });
+
+        mDate.setTag(selectedCal);
+    }
+
+    private void handChooseStationEvent(ChooseStationEvent event) {
+        ChooseStationEvent chooseStationEvent = event;
         if (chooseStationEvent.getFromStation() != null) {
             mFromStation.setText(chooseStationEvent.getFromStation().getStationName());
             mFromStation.setTag(chooseStationEvent.getFromStation());

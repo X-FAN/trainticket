@@ -1,5 +1,6 @@
 package com.xf.sherlock.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,12 +35,16 @@ public class QueryResultActivity extends BaseActivity {
     RecyclerView mQueryResultShow;
     private QueryResultAdapter mQueryResultAdapter;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_query_result);
         ButterKnife.bind(this);
         initToolBar();
+        setTitle("查询结果");
+        mProgressDialog = new ProgressDialog(this);
         mQueryCondition = getIntent().getParcelableExtra(MyConstant.QUERY_CONDITION);
         mQueryService = RetrofitUtils.getInstance(this).create(QueryService.class);
         mQueryResultShow.setLayoutManager(new LinearLayoutManager(this));
@@ -50,6 +55,7 @@ public class QueryResultActivity extends BaseActivity {
                 .flatMap(new Func1<Void, Observable<TrainTicketResult>>() {
                     @Override
                     public Observable<TrainTicketResult> call(Void aVoid) {//查询车票信息
+                        mProgressDialog.show();
                         String fromStationCode = mQueryCondition.getFromStation().getStationCode();
                         String toStationCode = mQueryCondition.getToStation().getStationCode();
                         String date = mQueryCondition.getDate();
@@ -60,6 +66,7 @@ public class QueryResultActivity extends BaseActivity {
                 .subscribe(new Action1<TrainTicketResult>() {
                     @Override
                     public void call(TrainTicketResult trainTicketResult) {
+                        mProgressDialog.cancel();
                         List<TicketInfoContainer> ticketInfoContainers = trainTicketResult.getData();
                         if (mQueryResultAdapter == null) {
                             mQueryResultAdapter = new QueryResultAdapter(QueryResultActivity.this, ticketInfoContainers);
@@ -69,11 +76,13 @@ public class QueryResultActivity extends BaseActivity {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        mProgressDialog.cancel();
                         T.showShort(QueryResultActivity.this, throwable.getMessage());
                     }
                 });
 
 
     }
+
 
 }

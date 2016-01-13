@@ -10,7 +10,6 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.trello.rxlifecycle.ActivityEvent;
@@ -72,6 +71,12 @@ public class ChooseStationActivity extends BaseActivity {
     }
 
     private void addListener() {
+        setOnFinishListener(new OnFinishListener() {
+            @Override
+            public void onFinish() {
+                EventBus.getDefault().post(new ChooseStationEvent(mFromStation, mToStation));
+            }
+        });
         mSideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
 
             @Override
@@ -101,16 +106,6 @@ public class ChooseStationActivity extends BaseActivity {
                     @Override
                     public void call(CharSequence charSequence) {
                         filterStation(charSequence);
-                    }
-                });
-        RxToolbar.navigationClicks(mToolbar)
-                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        EventBus.getDefault().post(new ChooseStationEvent(mFromStation, mToStation));
-                        finish();
                     }
                 });
         RxAdapterView.itemClicks(mStationShow)
