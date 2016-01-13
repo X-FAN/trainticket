@@ -46,6 +46,7 @@ public class DatePickActivity extends BaseActivity {
     //更新UI
     public void onEventMainThread(SendCurrentDateEvent sendCurrentDateEvent) {
         if (sendCurrentDateEvent.getCalendarDay() != null) {
+            mCalendarView.setCurrentDate(sendCurrentDateEvent.getCalendarDay());
             mCalendarView.setSelectedDate(sendCurrentDateEvent.getCalendarDay());
         }
         EventBus.getDefault().removeStickyEvent(sendCurrentDateEvent);
