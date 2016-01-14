@@ -18,7 +18,6 @@ public class MyApplication extends Application {
 
     private void initPicasso() {
         Picasso picasso = new Picasso.Builder(this).downloader(new OkHttpDownloader(RetrofitUtils.getClient(this))).build();
-        picasso.setIndicatorsEnabled(true);
         Picasso.setSingletonInstance(picasso);
     }
 }

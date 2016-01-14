@@ -42,6 +42,7 @@ import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -246,18 +247,16 @@ public class LoginActivity extends BaseActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            showProgress(true);
             final StringBuffer randcode = getRandCode();
             mCheckImageService.checkImage(randcode.toString(), "sjrand")
                     .compose(this.<CheckImage>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map(new Func1<CheckImage, Observable<Login>>() {//验证图片
+                    .flatMap(new Func1<CheckImage, Observable<Login>>() {//验证图片
                         @Override
                         public Observable<Login> call(CheckImage checkImage) {
                             if ("1".equals(checkImage.getData().getResult())) {
                                 T.showShort(LoginActivity.this, "图片验证正确");
-                                return getLoginOb(account, password, randcode);
+                                return getLoginOb(account, password, randcode);//登录
                             } else {
                                 showProgress(false);
                                 T.showShort(LoginActivity.this, "图片验证错误");
@@ -265,13 +264,27 @@ public class LoginActivity extends BaseActivity {
                             return null;
                         }
                     })
-                    .subscribe(new Action1<Observable<Login>>() {//发起登录
+                    .doOnSubscribe(new Action0() {
                         @Override
-                        public void call(Observable<Login> loginObservable) {
-                            showProgress(false);
-                            if (loginObservable != null) {
-                                login(loginObservable);
+                        public void call() {
+                            showProgress(true);
+                        }
+                    })
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Login>() {//检验登录结果
+                        @Override
+                        public void call(Login login) {
+                            if ("Y".equals(login.getData().getLoginCheck())) {
+                                T.showShort(LoginActivity.this, "登录成功");
+                            } else {
+                                T.showShort(LoginActivity.this, login.getMessages().get(0));
                             }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            T.showShort(LoginActivity.this, throwable.getMessage());
                         }
                     });
         }
@@ -300,28 +313,6 @@ public class LoginActivity extends BaseActivity {
         return randcode;
     }
 
-    //登录
-    private void login(Observable<Login> loginObservable) {
-        loginObservable.observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<Login>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new Action1<Login>() {
-                    @Override
-                    public void call(Login login) {
-                        showProgress(false);
-                        if ("Y".equals(login.getData().getLoginCheck())) {
-                            T.showShort(LoginActivity.this, "登录成功");
-                        } else {
-                            T.showShort(LoginActivity.this, login.getMessages().get(0));
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        showProgress(false);
-                        T.showShort(LoginActivity.this, throwable.getMessage());
-                    }
-                });
-    }
 
     private Observable<Login> getLoginOb(String account, String password, StringBuffer randcode) {
         return mLoginService.login(account, password, randcode.toString())
