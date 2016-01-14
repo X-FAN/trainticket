@@ -107,6 +107,7 @@
                 android:layout_toEndOf="@id/tv_date"
                 android:layout_toRightOf="@id/tv_date"
                 android:padding="@dimen/common_small_margin"
+                android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_common_size" />
         </RelativeLayout>
 

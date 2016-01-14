@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * Created by Administrator on 2015/12/27.
  */
@@ -80,6 +83,17 @@ public class CommonUtils {
     public static void jump(Intent intent, Context packageContext, Class<?> cls) {
         intent.setClass(packageContext, cls);
         packageContext.startActivity(intent);
+    }
+
+    /**
+     * 获取如"2016-01-18"格式的日期字符串
+     *
+     * @param calendar
+     * @return
+     */
+    public static String getDate(Calendar calendar) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(calendar.getTime());
     }
 
 

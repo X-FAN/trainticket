@@ -49,6 +49,11 @@ public class QueryResultAdapter extends RecyclerView.Adapter<QueryResultAdapter.
         return mTicketInfoContainers == null ? 0 : mTicketInfoContainers.size();
     }
 
+    public void setData(List<TicketInfoContainer> data) {
+        mTicketInfoContainers = data;
+        notifyDataSetChanged();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.train_num)

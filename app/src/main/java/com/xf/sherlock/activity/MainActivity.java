@@ -1,7 +1,6 @@
 package com.xf.sherlock.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -30,10 +29,10 @@ import com.xf.sherlock.bean.Station;
 import com.xf.sherlock.event.ChooseDateEvent;
 import com.xf.sherlock.event.ChooseStationEvent;
 import com.xf.sherlock.event.SendCurrentDateEvent;
+import com.xf.sherlock.event.SendQueryConditionEvent;
 import com.xf.sherlock.utils.CommonUtils;
 import com.xf.sherlock.utils.T;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
@@ -172,10 +171,9 @@ public class MainActivity extends BaseActivity {
                         if (check()) {
                             Station fromStation = (Station) mFromStation.getTag();
                             Station toStation = (Station) mToStation.getTag();
-                            String date = mDate.getText().toString();
-                            Intent intent = new Intent();
-                            intent.putExtra(MyConstant.QUERY_CONDITION, new QueryCondition(fromStation, toStation, date));
-                            CommonUtils.jump(intent, MainActivity.this, QueryResultActivity.class);
+                            Calendar date = ((CalendarDay) mDate.getTag()).getCalendar();
+                            EventBus.getDefault().postSticky(new SendQueryConditionEvent(new QueryCondition(fromStation, toStation, date)));
+                            CommonUtils.jump(MainActivity.this, QueryResultActivity.class);
                         }
                     }
                 });
@@ -238,8 +236,7 @@ public class MainActivity extends BaseActivity {
         rx.Observable.just(selectedCal).map(new Func1<CalendarDay, String>() {
             @Override
             public String call(CalendarDay calendarDay) {//处理日期格式
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                return sdf.format(calendarDay.getDate());
+                return CommonUtils.getDate(calendarDay.getCalendar());
             }
         }).subscribe(new Action1<String>() {
             @Override
