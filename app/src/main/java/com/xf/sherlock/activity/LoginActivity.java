@@ -1,11 +1,9 @@
 package com.xf.sherlock.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -31,6 +29,7 @@ import com.xf.sherlock.bean.Login;
 import com.xf.sherlock.request.CheckImageService;
 import com.xf.sherlock.request.LoginService;
 import com.xf.sherlock.utils.CommonUtils;
+import com.xf.sherlock.utils.L;
 import com.xf.sherlock.utils.RetrofitUtils;
 import com.xf.sherlock.utils.T;
 
@@ -72,6 +71,7 @@ public class LoginActivity extends BaseActivity {
     private RelativeLayout mContainer;
     private ViewGroup.LayoutParams mPara;
     private TextView mRefresh;//刷新
+    private ProgressDialog mProgressDialog;
 
 
     @Override
@@ -194,6 +194,8 @@ public class LoginActivity extends BaseActivity {
         mCheckImage = (ImageView) findViewById(R.id.check_code_image);
         mContainer = (RelativeLayout) findViewById(R.id.container);
         mRefresh = (TextView) findViewById(R.id.refresh);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("正在登陆");
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -208,18 +210,23 @@ public class LoginActivity extends BaseActivity {
 
 
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
-        RxView.clicks(signInButton).subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void aVoid) {
-                attemptLogin();
-            }
-        });
-        RxView.clicks(mRefresh).subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void aVoid) {
-                loadCheckImage();
-            }
-        });
+        RxView.clicks(signInButton)
+                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        attemptLogin();
+                    }
+                });
+        RxView.clicks(mRefresh)
+                .compose(this.<Void>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        clearImage();
+                        loadCheckImage();
+                    }
+                });
     }
 
 
@@ -254,20 +261,14 @@ public class LoginActivity extends BaseActivity {
                     .flatMap(new Func1<CheckImage, Observable<Login>>() {//验证图片
                         @Override
                         public Observable<Login> call(CheckImage checkImage) {
-                            if ("1".equals(checkImage.getData().getResult())) {
-                                T.showShort(LoginActivity.this, "图片验证正确");
-                                return getLoginOb(account, password, randcode);//登录
-                            } else {
-                                showProgress(false);
-                                T.showShort(LoginActivity.this, "图片验证错误");
-                            }
-                            return null;
+                            return getLoginObservable(checkImage, account, password, randcode);
+
                         }
                     })
-                    .doOnSubscribe(new Action0() {
+                    .doOnSubscribe(new Action0() {//显示进度条
                         @Override
                         public void call() {
-                            showProgress(true);
+                            mProgressDialog.show();
                         }
                     })
                     .subscribeOn(AndroidSchedulers.mainThread())
@@ -275,8 +276,10 @@ public class LoginActivity extends BaseActivity {
                     .subscribe(new Action1<Login>() {//检验登录结果
                         @Override
                         public void call(Login login) {
+                            mProgressDialog.dismiss();
                             if ("Y".equals(login.getData().getLoginCheck())) {
                                 T.showShort(LoginActivity.this, "登录成功");
+                                finish();
                             } else {
                                 T.showShort(LoginActivity.this, login.getMessages().get(0));
                             }
@@ -284,9 +287,35 @@ public class LoginActivity extends BaseActivity {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
+                            L.e(throwable.getMessage());
+                            mProgressDialog.dismiss();
                             T.showShort(LoginActivity.this, throwable.getMessage());
                         }
                     });
+
+
+        }
+    }
+
+    @Nullable
+    private Observable<Login> getLoginObservable(CheckImage checkImage, String account, String password, StringBuffer randcode) {
+        if ("1".equals(checkImage.getData().getResult())) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    T.showShort(LoginActivity.this, "图片验证正确");
+                }
+            });
+            return getLoginOb(account, password, randcode);//登录
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressDialog.dismiss();
+                    T.showShort(LoginActivity.this, "图片验证错误");
+                }
+            });
+            return null;
         }
     }
 
@@ -320,35 +349,10 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+    //清除验证图片上的点击图标
+    private void clearImage() {
+        for (ImageView iv : recordImage) {
+            iv.setVisibility(View.GONE);
         }
     }
 
