@@ -43,6 +43,7 @@ public class QueryResultActivity extends BaseActivity {
 
     private QueryResultAdapter mQueryResultAdapter;
     private Handler myHandler = new Handler();
+
     @Bind(R.id.query_result_show)
     RecyclerView mQueryResultShow;
     @Bind(R.id.swipeRefreshLayout)

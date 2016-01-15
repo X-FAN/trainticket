@@ -7,4 +7,6 @@
     <color name="gap_line">#cfd8dc</color>
     <color name="text_hint">#888888</color>
     <color name="light_red">#CC6D56</color>
+    <color name="purple">#614DB3</color>
+    <color name="blue">#3C8DC4</color>
 </resources>
