@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -39,6 +41,7 @@ public class ChooseStationActivity extends BaseActivity {
     private StationAdapter mStationAdapter;
     private Filter mFilter;
     private List<Station> mStationList;
+    private Realm mRealm;
 
     private SideBar mSideBar;
     private ListView mStationShow;
@@ -51,10 +54,17 @@ public class ChooseStationActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_station);
+        mRealm = Realm.getDefaultInstance();
         initViews();
         addListener();
         initData();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        mRealm.close();
+        super.onDestroy();
     }
 
     private void initViews() {
@@ -127,30 +137,45 @@ public class ChooseStationActivity extends BaseActivity {
     }
 
     private void initData() {
-        mGetTrainStationService = RetrofitUtils.getInstance(this).create(GetTrainStationService.class);
-        mGetTrainStationService.getTrainStation()
-                .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<String, List<Station>>() {
-                    @Override
-                    public List<Station> call(String s) {
-                        return paraStation(s);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Station>>() {
-                    @Override
-                    public void call(List<Station> stations) {
-                        mStationAdapter = new StationAdapter(ChooseStationActivity.this, stations);
-                        mFilter = mStationAdapter.getFilter();
-                        mStationShow.setAdapter(mStationAdapter);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        T.showShort(ChooseStationActivity.this, throwable.getMessage());
-                    }
-                });
+        //从数据库中查找数据
+        RealmResults<Station> result = mRealm.where(Station.class).findAll();
+        if (result.size() > 0) {
+            mStationAdapter = new StationAdapter(ChooseStationActivity.this, result.subList(0, result.size()));
+            mFilter = mStationAdapter.getFilter();
+            mStationShow.setAdapter(mStationAdapter);
+        } else {
+            mGetTrainStationService = RetrofitUtils.getInstance(this).create(GetTrainStationService.class);
+            mGetTrainStationService.getTrainStation()
+                    .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .map(new Func1<String, List<Station>>() {
+                        @Override
+                        public List<Station> call(String s) {
+                            return paraStation(s);
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<Station>>() {
+                        @Override
+                        public void call(List<Station> stations) {
+                            //保存数据
+                            for (Station station : stations) {
+                                mRealm.beginTransaction();
+                                mRealm.copyToRealmOrUpdate(station);
+                                mRealm.commitTransaction();
+                            }
+                            mStationAdapter = new StationAdapter(ChooseStationActivity.this, stations);
+                            mFilter = mStationAdapter.getFilter();
+                            mStationShow.setAdapter(mStationAdapter);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            T.showShort(ChooseStationActivity.this, throwable.getMessage());
+                        }
+                    });
+        }
+
     }
 
 

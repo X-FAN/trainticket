@@ -1,13 +1,20 @@
 package com.xf.sherlock.bean;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import org.parceler.Parcel;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by TC on 2016/1/7.
  */
-public class Station implements Parcelable {
+
+@Parcel(
+        value = Parcel.Serialization.BEAN,
+        analyze = {Station.class})
+public class Station extends RealmObject {
     private String stationName;//车站名
+    @PrimaryKey
     private String stationCode;//车站代码
     private String fullPY;//车站全拼
     private String shortPY;//车站简拼
@@ -18,41 +25,6 @@ public class Station implements Parcelable {
 
     }
 
-    protected Station(Parcel in) {
-        stationName = in.readString();
-        stationCode = in.readString();
-        fullPY = in.readString();
-        shortPY = in.readString();
-        section = in.readString();
-        isShow = in.readByte() != 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(stationName);
-        dest.writeString(stationCode);
-        dest.writeString(fullPY);
-        dest.writeString(shortPY);
-        dest.writeString(section);
-        dest.writeByte((byte) (isShow ? 1 : 0));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Station> CREATOR = new Creator<Station>() {
-        @Override
-        public Station createFromParcel(Parcel in) {
-            return new Station(in);
-        }
-
-        @Override
-        public Station[] newArray(int size) {
-            return new Station[size];
-        }
-    };
 
     public String getStationName() {
         return stationName;

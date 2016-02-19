@@ -51,8 +51,6 @@ public class RetrofitUtils {
         client.interceptors().add(new ReceivedCookiesInterceptor(context));
         client.interceptors().add(new AddCookiesInterceptor(context));
         client.interceptors().add(log);
-        /*client.networkInterceptors().add(new StethoInterceptor());//一个调试工具，具体搜Stetho
-        return new OkClient(client);*/
         return client;
     }
 
