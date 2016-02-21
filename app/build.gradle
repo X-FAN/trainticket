@@ -22,6 +22,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets{
+        main{
+            java.srcDirs=['src/main/java','src/main/java-gen']
+        }
+    }
 }
 
 dependencies {
@@ -56,4 +61,5 @@ dependencies {
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'io.realm:realm-android:0.87.0'
     compile 'org.parceler:parceler-api:1.0.4'
+    compile 'de.greenrobot:greendao:2.1.0'
 }

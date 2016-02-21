@@ -9,10 +9,8 @@ import io.realm.annotations.PrimaryKey;
  * Created by TC on 2016/1/7.
  */
 
-@Parcel(
-        value = Parcel.Serialization.BEAN,
-        analyze = {Station.class})
-public class Station extends RealmObject {
+@Parcel(value = Parcel.Serialization.BEAN,analyze = {Station.class})
+public class Station  {
     private String stationName;//车站名
     @PrimaryKey
     private String stationCode;//车站代码

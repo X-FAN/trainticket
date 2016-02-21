@@ -137,13 +137,7 @@ public class ChooseStationActivity extends BaseActivity {
     }
 
     private void initData() {
-        //从数据库中查找数据
-        RealmResults<Station> result = mRealm.where(Station.class).findAll();
-        if (result.size() > 0) {
-            mStationAdapter = new StationAdapter(ChooseStationActivity.this, result.subList(0, result.size()));
-            mFilter = mStationAdapter.getFilter();
-            mStationShow.setAdapter(mStationAdapter);
-        } else {
+
             mGetTrainStationService = RetrofitUtils.getInstance(this).create(GetTrainStationService.class);
             mGetTrainStationService.getTrainStation()
                     .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
@@ -158,12 +152,6 @@ public class ChooseStationActivity extends BaseActivity {
                     .subscribe(new Action1<List<Station>>() {
                         @Override
                         public void call(List<Station> stations) {
-                            //保存数据
-                            for (Station station : stations) {
-                                mRealm.beginTransaction();
-                                mRealm.copyToRealmOrUpdate(station);
-                                mRealm.commitTransaction();
-                            }
                             mStationAdapter = new StationAdapter(ChooseStationActivity.this, stations);
                             mFilter = mStationAdapter.getFilter();
                             mStationShow.setAdapter(mStationAdapter);
@@ -174,8 +162,6 @@ public class ChooseStationActivity extends BaseActivity {
                             T.showShort(ChooseStationActivity.this, throwable.getMessage());
                         }
                     });
-        }
-
     }
 
 
