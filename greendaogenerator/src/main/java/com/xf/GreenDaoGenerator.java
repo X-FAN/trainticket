@@ -9,7 +9,7 @@ public class GreenDaoGenerator {
         Schema schema = new Schema(1, "com.xf.greendao");
         schema.enableKeepSectionsByDefault();
         addStation(schema);
-        new DaoGenerator().generateAll(schema, "../app/src/main/java-gen");
+        new DaoGenerator().generateAll(schema, "E:/trainticket/trainticket/app/src/main/java-gen");
     }
 
     private static void addStation(Schema schema) {
@@ -19,7 +19,6 @@ public class GreenDaoGenerator {
         station.addStringProperty("fullPY");
         station.addStringProperty("shortPY");
         station.addStringProperty("section");
-        station.addStringProperty("stationCode");
         station.addBooleanProperty("isShow");
     }
 

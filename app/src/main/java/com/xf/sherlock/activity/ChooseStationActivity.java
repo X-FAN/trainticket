@@ -1,5 +1,6 @@
 package com.xf.sherlock.activity;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -13,9 +14,12 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.trello.rxlifecycle.ActivityEvent;
+import com.xf.greendao.DaoMaster;
+import com.xf.greendao.DaoSession;
+import com.xf.greendao.Station;
+import com.xf.greendao.StationDao;
 import com.xf.sherlock.R;
 import com.xf.sherlock.adapter.StationAdapter;
-import com.xf.sherlock.bean.Station;
 import com.xf.sherlock.event.ChooseStationEvent;
 import com.xf.sherlock.request.GetTrainStationService;
 import com.xf.sherlock.utils.RetrofitUtils;
@@ -26,8 +30,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -38,10 +40,9 @@ import rx.schedulers.Schedulers;
 public class ChooseStationActivity extends BaseActivity {
 
     private GetTrainStationService mGetTrainStationService;
-    private StationAdapter mStationAdapter;
+    private StationDao mStationDao;
     private Filter mFilter;
     private List<Station> mStationList;
-    private Realm mRealm;
 
     private SideBar mSideBar;
     private ListView mStationShow;
@@ -49,21 +50,26 @@ public class ChooseStationActivity extends BaseActivity {
     private EditText mTo;
     private Station mFromStation;
     private Station mToStation;
+    private StationAdapter mStationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_station);
-        mRealm = Realm.getDefaultInstance();
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "stations-db", null);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(db);
+        DaoSession daoSession = daoMaster.newSession();
+        mStationDao = daoSession.getStationDao();
         initViews();
         addListener();
         initData();
+
 
     }
 
     @Override
     protected void onDestroy() {
-        mRealm.close();
         super.onDestroy();
     }
 
@@ -137,8 +143,13 @@ public class ChooseStationActivity extends BaseActivity {
     }
 
     private void initData() {
-
-            mGetTrainStationService = RetrofitUtils.getInstance(this).create(GetTrainStationService.class);
+        mGetTrainStationService = RetrofitUtils.getInstance(this).create(GetTrainStationService.class);
+        List<Station> stations = mStationDao.queryBuilder().build().list();
+        if (stations.size() > 0) {
+            mStationAdapter = new StationAdapter(ChooseStationActivity.this, stations);
+            mFilter = mStationAdapter.getFilter();
+            mStationShow.setAdapter(mStationAdapter);
+        } else {
             mGetTrainStationService.getTrainStation()
                     .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
@@ -162,6 +173,8 @@ public class ChooseStationActivity extends BaseActivity {
                             T.showShort(ChooseStationActivity.this, throwable.getMessage());
                         }
                     });
+        }
+
     }
 
 
@@ -199,6 +212,8 @@ public class ChooseStationActivity extends BaseActivity {
                         if (!recordSection.toString().contains(section)) {
                             station.setIsShow(true);
                             recordSection.append(section);
+                        } else {
+                            station.setIsShow(false);
                         }
                         return station;
                     }
@@ -212,6 +227,7 @@ public class ChooseStationActivity extends BaseActivity {
                 .subscribe(new Action1<List<Station>>() {
                     @Override
                     public void call(List<Station> stations) {
+                        mStationDao.insertInTx(stations);
                         mStationList = stations;
                     }
                 });

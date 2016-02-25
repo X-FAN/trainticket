@@ -1,14 +1,14 @@
 package com.xf.sherlock;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+import com.xf.greendao.DaoMaster;
+import com.xf.greendao.DaoSession;
 import com.xf.sherlock.utils.L;
 import com.xf.sherlock.utils.RetrofitUtils;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * Created by Administrator on 2015/12/27.
@@ -18,9 +18,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         L.isDebug = true;
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();
-        Realm.setDefaultConfiguration(realmConfiguration);
         initPicasso();
+
     }
 
     private void initPicasso() {
