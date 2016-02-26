@@ -66,13 +66,13 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.UMDefault" />
         <activity
-            android:name=".umengshare.wxapi.WXEntryActivity"
+            android:name=".wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".umengshare.WBShareActivity"
+            android:name=".WBShareActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -90,11 +90,6 @@
         <service
             android:name="com.sina.weibo.sdk.net.DownloadService"
             android:exported="false" />
-
-        <activity
-            android:name=".umengshare.WBShareActivity"
-            android:label="@string/title_activity_wbshare"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

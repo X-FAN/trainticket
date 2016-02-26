@@ -1,4 +1,4 @@
-package com.xf.sherlock.umengshare.wxapi;
+package com.xf.sherlock.wxapi;
 
 
 import com.umeng.socialize.weixin.view.WXCallbackActivity;

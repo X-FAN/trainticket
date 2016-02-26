@@ -1,4 +1,4 @@
-package com.xf.sherlock.umengshare;
+package com.xf.sherlock;
 
 import com.umeng.socialize.media.WBShareCallBackActivity;
 
