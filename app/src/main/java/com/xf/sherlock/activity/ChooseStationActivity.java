@@ -65,7 +65,6 @@ public class ChooseStationActivity extends BaseActivity {
         addListener();
         initData();
 
-
     }
 
     @Override

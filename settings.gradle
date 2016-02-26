@@ -1,1 +1,3 @@
-include ':app', ':greendaogenerator'
+include ':app'
+include ':greendaogenerator'
+include ':social_sdk_library_project'

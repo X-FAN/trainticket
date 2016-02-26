@@ -2,7 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
 
+
     packagingOptions {
+        exclude 'META-INF/maven/org.twitter4j/twitter4j-core/pom.xml'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/maven/org.twitter4j/twitter4j-core/pom.properties'
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 
@@ -16,15 +20,31 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    signingConfigs {
+        debug {
+            storeFile file('E:/sign/cat.jks')
+            keyAlias 'cat'
+            keyPassword 'xfm1990051313'
+            storePassword 'xfm1990051313'
+        }
+        release {
+            storeFile file('E:/sign/cat.jks')
+            keyAlias 'cat'
+            keyPassword 'xfm1990051313'
+            storePassword 'xfm1990051313'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
-    sourceSets{
-        main{
-            java.srcDirs=['src/main/java','src/main/java-gen']
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', 'src/main/java-gen']
         }
     }
 }
@@ -62,4 +82,5 @@ dependencies {
     compile 'io.realm:realm-android:0.87.0'
     compile 'org.parceler:parceler-api:1.0.4'
     compile 'de.greenrobot:greendao:2.1.0'
+    compile project (':social_sdk_library_project')
 }

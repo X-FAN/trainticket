@@ -16,4 +16,5 @@
     <string name="title_activity_choose_station">ChooseStationActivity</string>
     <string name="title_activity_query_result">QueryResultActivity</string>
     <string name="title_activity_date_pick">DatePickActivity</string>
+    <string name="title_activity_wbshare">WBShareActivity</string>
 </resources>
