@@ -1,16 +1,24 @@
 package com.xf.sherlock.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.v4.widget.RxSwipeRefreshLayout;
 import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.ActivityEvent;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.shareboard.SnsPlatform;
+import com.umeng.socialize.utils.ShareBoardlistener;
 import com.xf.sherlock.R;
 import com.xf.sherlock.adapter.QueryResultAdapter;
 import com.xf.sherlock.bean.QueryCondition;
@@ -36,7 +44,11 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class QueryResultActivity extends BaseActivity {
-
+    private SHARE_MEDIA[] displaylist = new SHARE_MEDIA[]
+            {
+                    SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.SINA,
+                    SHARE_MEDIA.QQ, SHARE_MEDIA.QZONE
+            };
     private QueryService mQueryService;
     private QueryCondition mQueryCondition;
 
@@ -144,6 +156,44 @@ public class QueryResultActivity extends BaseActivity {
                 }
             });
         }
+        mQueryResultAdapter.setOnItemClickLitener(new QueryResultAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                new ShareAction(QueryResultActivity.this).setDisplayList(displaylist)
+                        .withText("我在使用猫咪汽车票,你也来赶快使用吧")
+                        .withTitle("猫咪火车票")
+                        .withTargetUrl("http://www.baidu.com")
+                        .setListenerList(new UMShareListener() {
+                            @Override
+                            public void onResult(SHARE_MEDIA share_media) {
+                                T.showShort(QueryResultActivity.this, "分享成功");
+                            }
+
+                            @Override
+                            public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+                                T.showShort(QueryResultActivity.this, "分享失败");
+                            }
+
+                            @Override
+                            public void onCancel(SHARE_MEDIA share_media) {
+
+                            }
+                        })
+                        .setShareboardclickCallback(new ShareBoardlistener() {
+                            @Override
+                            public void onclick(SnsPlatform snsPlatform, SHARE_MEDIA share_media) {
+                                new ShareAction(QueryResultActivity.this).setPlatform(share_media).withText("我在使用猫咪火车票").share();
+                            }
+
+                        })
+                        .open();
+            }
+        });
 
     }
 
@@ -183,4 +233,9 @@ public class QueryResultActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
+    }
 }

@@ -50,7 +50,7 @@ public class QueryResultAdapter extends RecyclerView.Adapter<QueryResultAdapter.
     }
 
     @Override
-    public void onBindViewHolder(QueryResultAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(QueryResultAdapter.ViewHolder holder, final int position) {
         TicketInfo ticketInfo = mTicketInfoContainers.get(position).getTicketInfo();
         holder.mFrom.setText(ticketInfo.getFromStationName());
         holder.mTo.setText(ticketInfo.getToStationName());
@@ -69,6 +69,21 @@ public class QueryResultAdapter extends RecyclerView.Adapter<QueryResultAdapter.
         }
         List<Seat> seats = parseSeatInfo(ticketInfo.getYpInfo());
         holder.mLeftTicketInfo.setText(getLeftTicket(seats));
+        if (mOnItemClickLitener != null) {//设置点击事件
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnItemClickLitener.onItemClick(v, position);
+                }
+            });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mOnItemClickLitener.onItemLongClick(v, position);
+                    return false;
+                }
+            });
+        }
     }
 
     private String getDuration(@NonNull String duration) {
@@ -200,4 +215,18 @@ public class QueryResultAdapter extends RecyclerView.Adapter<QueryResultAdapter.
             ButterKnife.bind(this, view);
         }
     }
+
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
 }
