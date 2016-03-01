@@ -2,8 +2,8 @@ package com.xf.sherlock.utils;
 
 import android.content.Context;
 
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import com.xf.sherlock.converterfactory.ToStringConverterFactory;
 import com.xf.sherlock.interceptor.AddCookiesInterceptor;
 import com.xf.sherlock.interceptor.ReceivedCookiesInterceptor;
@@ -45,12 +45,10 @@ public class RetrofitUtils {
 
 
     public static OkHttpClient getClient(Context context) {
-        HttpLoggingInterceptor log = new HttpLoggingInterceptor();
-        log.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = getUnsafeOkHttpClient();
+        client.networkInterceptors().add(new StethoInterceptor());
         client.interceptors().add(new ReceivedCookiesInterceptor(context));
         client.interceptors().add(new AddCookiesInterceptor(context));
-        client.interceptors().add(log);
         return client;
     }
 
