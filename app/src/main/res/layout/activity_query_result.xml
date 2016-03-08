@@ -25,8 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            android:paddingBottom="@dimen/common_small_margin"
-            android:paddingTop="@dimen/common_small_margin">
+            android:paddingBottom="@dimen/spacing_tiny"
+            android:paddingTop="@dimen/spacing_tiny">
 
             <TextView
                 android:id="@+id/pre"
@@ -34,10 +34,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:padding="@dimen/common_middle_margin"
+                android:padding="@dimen/spacing_small"
                 android:text="前一天"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_common_size" />
+                android:textSize="@dimen/font_normal" />
 
             <TextView
                 android:id="@+id/date"
@@ -45,10 +45,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:background="@drawable/white_bg"
-                android:padding="@dimen/common_middle_margin"
+                android:padding="@dimen/spacing_small"
                 android:text="2016-01-18"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_common_size" />
+                android:textSize="@dimen/font_normal" />
 
             <TextView
                 android:id="@+id/next"
@@ -56,10 +56,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:padding="@dimen/common_middle_margin"
+                android:padding="@dimen/spacing_small"
                 android:text="后一天"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_common_size" />
+                android:textSize="@dimen/font_normal" />
         </RelativeLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout

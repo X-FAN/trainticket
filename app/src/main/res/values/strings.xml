@@ -17,4 +17,5 @@
     <string name="title_activity_query_result">QueryResultActivity</string>
     <string name="title_activity_date_pick">DatePickActivity</string>
     <string name="title_activity_wbshare">WBShareActivity</string>
+    <string name="title_activity_unfinished_order">UnfinishedOrderActivity</string>
 </resources>

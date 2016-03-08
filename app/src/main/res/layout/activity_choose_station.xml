@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/common_margin">
+            android:padding="@dimen/spacing_normal">
 
             <EditText
                 android:id="@+id/from"
@@ -54,10 +54,10 @@
                 android:layout_weight="1"
                 android:background="@drawable/selector_edittext_bg"
                 android:drawableLeft="@drawable/from"
-                android:drawablePadding="@dimen/common_small_margin"
+                android:drawablePadding="@dimen/spacing_tiny"
                 android:drawableStart="@drawable/from"
-                android:padding="@dimen/common_small_margin"
-                android:textSize="@dimen/text_common_size" />
+                android:padding="@dimen/spacing_tiny"
+                android:textSize="@dimen/font_normal" />
 
             <EditText
                 android:id="@+id/to"
@@ -66,10 +66,10 @@
                 android:layout_weight="1"
                 android:background="@drawable/selector_edittext_bg"
                 android:drawableLeft="@drawable/to"
-                android:drawablePadding="@dimen/common_small_margin"
+                android:drawablePadding="@dimen/spacing_tiny"
                 android:drawableStart="@drawable/to"
-                android:padding="@dimen/common_small_margin"
-                android:textSize="@dimen/text_common_size" />
+                android:padding="@dimen/spacing_tiny"
+                android:textSize="@dimen/font_normal" />
         </LinearLayout>
 
         <include layout="@layout/gap_view" />

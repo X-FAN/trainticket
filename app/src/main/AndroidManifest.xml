@@ -107,6 +107,11 @@
         <service
             android:name="com.sina.weibo.sdk.net.DownloadService"
             android:exported="false" />
+
+        <activity
+            android:name=".activity.UnfinishedOrderActivity"
+            android:label="@string/title_activity_unfinished_order"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

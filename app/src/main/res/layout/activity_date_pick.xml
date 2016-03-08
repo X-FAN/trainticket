@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/appBar"
-        android:padding="@dimen/common_middle_margin"
+        android:padding="@dimen/spacing_small"
         app:mcv_selectionColor="@color/colorPrimary"
         app:mcv_showOtherDates="out_of_range" />
 
