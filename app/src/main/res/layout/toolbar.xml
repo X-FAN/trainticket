@@ -4,5 +4,6 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:theme="@style/AppTheme.AppBarOverlay"
-    app:layout_collapseMode="pin" />
+    app:layout_collapseMode="pin"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:theme="@style/AppTheme.AppBarOverlay" />

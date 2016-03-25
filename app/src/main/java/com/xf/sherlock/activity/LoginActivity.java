@@ -57,7 +57,7 @@ public class LoginActivity extends BaseActivity {
     private float mGapHeight;
     private float mHeightLimit;
 
-    private static final String CHECK_IMGAE = "https://kyfw.12306.cn/otn/passcodeNew/getPassCodeNew?module=login&rand=sjrand";//12306验证码图片
+    private static final String CHECK_IMAGE = "https://kyfw.12306.cn/otn/passcodeNew/getPassCodeNew?module=login&rand=sjrand";//12306验证码图片
     private List<ImagePoint> recordPoint = new ArrayList<>();
     private List<ImageView> recordImage = new ArrayList<>();
     private CheckImageService mCheckImageService;
@@ -65,8 +65,6 @@ public class LoginActivity extends BaseActivity {
 
     private AutoCompleteTextView mAccountView;
     private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
     private ImageView mCheckImage;
     private RelativeLayout mContainer;
     private ViewGroup.LayoutParams mPara;
@@ -108,7 +106,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loadCheckImage() {
-        Picasso.with(this).load(CHECK_IMGAE).skipMemoryCache().resize(mScreenWidth, mCheckImageHeight).into(mCheckImage, new Callback() {
+        Picasso.with(this).load(CHECK_IMAGE).skipMemoryCache().resize(mScreenWidth, mCheckImageHeight).into(mCheckImage, new Callback() {
             @Override
             public void onSuccess() {
 
@@ -189,8 +187,6 @@ public class LoginActivity extends BaseActivity {
         setTitle("登录12306");
         mAccountView = (AutoCompleteTextView) findViewById(R.id.account);
         mPasswordView = (EditText) findViewById(R.id.password);
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
         mCheckImage = (ImageView) findViewById(R.id.check_code_image);
         mContainer = (RelativeLayout) findViewById(R.id.container);
         mRefresh = (TextView) findViewById(R.id.refresh);
