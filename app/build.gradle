@@ -11,15 +11,15 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.xf.sherlock"
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
     }
 
     signingConfigs {
@@ -53,35 +53,35 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.jakewharton.rxbinding:rxbinding:0.3.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:0.3.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.3.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-design:0.3.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7:0.3.0'
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:0.23.0'
-    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
-    compile 'com.android.support:support-annotations:23.1.1'
-    compile 'com.trello:rxlifecycle:0.4.0'
-    compile 'com.trello:rxlifecycle-components:0.4.0'
-    compile 'com.android.support:cardview-v7:23.1.1'
-    compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.daimajia.easing:library:1.0.1@aar'
-    compile 'com.daimajia.androidanimations:library:1.1.3@aar'
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.prolificinteractive:material-calendarview:1.1.0'
-    compile 'de.hdodenhof:circleimageview:2.0.0'
-    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'io.realm:realm-android:0.87.0'
-    compile 'org.parceler:parceler-api:1.0.4'
-    compile 'de.greenrobot:greendao:2.1.0'
-    compile 'com.facebook.stetho:stetho-okhttp:1.3.1'
+    compile rootProject.ext.dependencies['retrofit']
+    compile rootProject.ext.dependencies['gson']
+    compile rootProject.ext.dependencies['converter-gson']
+    compile rootProject.ext.dependencies['appcompat-v7']
+    compile rootProject.ext.dependencies['design']
+    compile rootProject.ext.dependencies['picasso']
+    compile rootProject.ext.dependencies['rxbinding']
+    compile rootProject.ext.dependencies['rxbinding-support-v4']
+    compile rootProject.ext.dependencies['rxbinding-appcompat-v7']
+    compile rootProject.ext.dependencies['rxbinding-design']
+    compile rootProject.ext.dependencies['rxbinding-recyclerview-v7']
+    compile rootProject.ext.dependencies['rxjava']
+    compile rootProject.ext.dependencies['rxandroid']
+    compile rootProject.ext.dependencies['adapter-rxjava']
+    compile rootProject.ext.dependencies['support-annotations']
+    compile rootProject.ext.dependencies['rxlifecycle']
+    compile rootProject.ext.dependencies['rxlifecycle-components']
+    compile rootProject.ext.dependencies['cardview-v7']
+    compile rootProject.ext.dependencies['eventbus']
+    compile rootProject.ext.dependencies['nineoldandroids']
+    compile rootProject.ext.dependencies['easing-library']
+    compile rootProject.ext.dependencies['androidanimations']
+    compile rootProject.ext.dependencies['butterknife']
+    compile rootProject.ext.dependencies['material-calendarview']
+    compile rootProject.ext.dependencies['circleimageview']
+    compile rootProject.ext.dependencies['textdrawable']
+    compile rootProject.ext.dependencies['realm-android']
+    compile rootProject.ext.dependencies['parceler-api']
+    compile rootProject.ext.dependencies['greendao']
+    compile rootProject.ext.dependencies['stetho-okhttp']
     compile project(':social_sdk_library_project')
 }
