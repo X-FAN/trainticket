@@ -3,9 +3,9 @@
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/common_margin"
+    android:layout_margin="@dimen/spacing_normal"
     android:orientation="vertical"
-    android:padding="@dimen/common_middle_margin"
+    android:padding="@dimen/spacing_small"
     card_view:cardCornerRadius="0dp">
 
     <RelativeLayout
@@ -23,10 +23,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:minWidth="80dp"
-                android:padding="@dimen/common_middle_margin"
+                android:padding="@dimen/spacing_small"
                 android:text="K233"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_large_size" />
+                android:textSize="@dimen/font_large" />
 
             <TextView
                 android:id="@+id/from"
@@ -34,12 +34,12 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/train_num"
                 android:layout_toRightOf="@+id/train_num"
-                android:drawablePadding="@dimen/common_small_margin"
+                android:drawablePadding="@dimen/spacing_tiny"
                 android:gravity="center_vertical"
-                android:padding="@dimen/common_small_margin"
+                android:padding="@dimen/spacing_tiny"
                 android:text="10:30 南京南"
                 android:textColor="@color/light_red"
-                android:textSize="@dimen/text_common_size" />
+                android:textSize="@dimen/font_normal" />
 
             <TextView
                 android:id="@+id/to"
@@ -48,12 +48,12 @@
                 android:layout_below="@+id/from"
                 android:layout_toEndOf="@+id/train_num"
                 android:layout_toRightOf="@+id/train_num"
-                android:drawablePadding="@dimen/common_small_margin"
+                android:drawablePadding="@dimen/spacing_tiny"
                 android:gravity="center_vertical"
-                android:padding="@dimen/common_small_margin"
+                android:padding="@dimen/spacing_tiny"
                 android:text="11:00 北京"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/text_common_size" />
+                android:textSize="@dimen/font_normal" />
 
             <TextView
                 android:id="@+id/duration"
@@ -62,10 +62,10 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:padding="@dimen/common_small_margin"
+                android:padding="@dimen/spacing_tiny"
                 android:text="13小时12分"
                 android:textColor="@color/blue"
-                android:textSize="@dimen/text_common_size" />
+                android:textSize="@dimen/font_normal" />
 
         </RelativeLayout>
 
@@ -81,8 +81,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/gap"
-            android:padding="@dimen/common_small_margin"
-            android:textSize="@dimen/text_common_size" />
+            android:padding="@dimen/spacing_tiny"
+            android:textSize="@dimen/font_normal" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

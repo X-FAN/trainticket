@@ -2,6 +2,8 @@ package com.xf.sherlock.bean;
 
 import android.support.annotation.NonNull;
 
+import com.xf.greendao.Station;
+
 import java.util.Calendar;
 
 /**

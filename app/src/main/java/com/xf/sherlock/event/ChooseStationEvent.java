@@ -2,7 +2,7 @@ package com.xf.sherlock.event;
 
 import android.support.annotation.NonNull;
 
-import com.xf.sherlock.bean.Station;
+import com.xf.greendao.Station;
 
 /**
  * Created by TC on 2016/1/8.

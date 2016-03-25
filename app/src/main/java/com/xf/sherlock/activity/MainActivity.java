@@ -21,11 +21,11 @@ import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.trello.rxlifecycle.ActivityEvent;
+import com.xf.greendao.Station;
 import com.xf.sherlock.MyConstant;
 import com.xf.sherlock.R;
 import com.xf.sherlock.animator.RollAnimator;
 import com.xf.sherlock.bean.QueryCondition;
-import com.xf.sherlock.bean.Station;
 import com.xf.sherlock.event.ChooseDateEvent;
 import com.xf.sherlock.event.ChooseStationEvent;
 import com.xf.sherlock.event.SendCurrentDateEvent;
@@ -111,11 +111,14 @@ public class MainActivity extends BaseActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
+                item.setChecked(true);
+                drawerLayout.closeDrawers();
                 switch (item.getItemId()) {
                     case R.id.login://跳转到登录界面
-                        item.setChecked(true);
-                        drawerLayout.closeDrawers();
                         CommonUtils.jump(MainActivity.this, LoginActivity.class);
+                        break;
+                    case R.id.unfinished_order://跳转到未完成订单页面
+                        CommonUtils.jump(MainActivity.this, UnfinishedOrderActivity.class);
                         break;
                     default:
                         break;

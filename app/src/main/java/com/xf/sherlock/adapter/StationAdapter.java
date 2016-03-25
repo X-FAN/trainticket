@@ -10,8 +10,8 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.xf.greendao.Station;
 import com.xf.sherlock.R;
-import com.xf.sherlock.bean.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class StationAdapter extends BaseAdapter implements Filterable {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        if (station.isShow()) {
+        if (station.getIsShow()) {
             viewHolder.letterTv.setVisibility(View.VISIBLE);
             viewHolder.letterTv.setText(station.getSection());
         } else {
