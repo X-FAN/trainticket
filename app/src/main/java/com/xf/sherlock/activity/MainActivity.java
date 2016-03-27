@@ -171,14 +171,13 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        CommonUtils.jump(MainActivity.this, Main2Activity.class);
-//                        if (check()) {
-//                            Station fromStation = (Station) mFromStation.getTag();
-//                            Station toStation = (Station) mToStation.getTag();
-//                            Calendar date = ((CalendarDay) mDate.getTag()).getCalendar();
-//                            EventBus.getDefault().postSticky(new SendQueryConditionEvent(new QueryCondition(fromStation, toStation, date)));
-//                            CommonUtils.jump(MainActivity.this, QueryResultActivity.class);
-//                        }
+                        if (check()) {
+                            Station fromStation = (Station) mFromStation.getTag();
+                            Station toStation = (Station) mToStation.getTag();
+                            Calendar date = ((CalendarDay) mDate.getTag()).getCalendar();
+                            EventBus.getDefault().postSticky(new SendQueryConditionEvent(new QueryCondition(fromStation, toStation, date)));
+                            CommonUtils.jump(MainActivity.this, QueryResultActivity.class);
+                        }
                     }
                 });
 
