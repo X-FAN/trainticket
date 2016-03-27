@@ -2,6 +2,7 @@ package com.xf.sherlock.utils;
 
 import android.content.Context;
 
+import com.facebook.stetho.okhttp.BuildConfig;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.xf.sherlock.converterfactory.ToStringConverterFactory;
@@ -49,6 +50,9 @@ public class RetrofitUtils {
         client.networkInterceptors().add(new StethoInterceptor());
         client.interceptors().add(new ReceivedCookiesInterceptor(context));
         client.interceptors().add(new AddCookiesInterceptor(context));
+        if(BuildConfig.DEBUG){
+            client.interceptors().add(new StethoInterceptor());
+        }
         return client;
     }
 

@@ -108,6 +108,10 @@
         <activity
             android:name=".activity.UnfinishedOrderActivity"
             android:label="@string/title_activity_unfinished_order"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.Main2Activity"
+            android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme"></activity>
     </application>
 
