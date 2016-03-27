@@ -23,12 +23,7 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file('E:/sign/cat.jks')
-            keyAlias 'cat'
-            keyPassword 'xfm1990051313'
-            storePassword 'xfm1990051313'
-        }
+
         release {
             storeFile file('E:/sign/cat.jks')
             keyAlias 'cat'
