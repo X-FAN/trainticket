@@ -12,4 +12,8 @@
     tools:context="com.xf.sherlock.activity.UnfinishedOrderActivity"
     tools:showIn="@layout/activity_unfinished_order">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/unfinished_order_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

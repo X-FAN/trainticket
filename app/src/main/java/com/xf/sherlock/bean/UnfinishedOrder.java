@@ -20,7 +20,7 @@ public class UnfinishedOrder {
     private Integer httpstatus;
     @SerializedName("data")
     @Expose
-    private Data data;
+    private UnfinishedData unfinishedData;
     @SerializedName("messages")
     @Expose
     private List<Object> messages = new ArrayList<Object>();
@@ -82,22 +82,12 @@ public class UnfinishedOrder {
         this.httpstatus = httpstatus;
     }
 
-    /**
-     * 
-     * @return
-     *     The data
-     */
-    public Data getData() {
-        return data;
+    public UnfinishedData getUnfinishedData() {
+        return unfinishedData;
     }
 
-    /**
-     * 
-     * @param data
-     *     The data
-     */
-    public void setData(Data data) {
-        this.data = data;
+    public void setUnfinishedData(UnfinishedData unfinishedData) {
+        this.unfinishedData = unfinishedData;
     }
 
     /**
